@@ -1,1 +1,4 @@
+__pycache__
 test.db
+create_sql_db.py
+database_credentials.py

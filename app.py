@@ -1,11 +1,16 @@
+from database_credentials import USERNAME, PASSWORD
+from datetime import datetime
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + \
+	USERNAME + ':' + PASSWORD + '@localhost/food_tracker_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
 
 class Item(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -19,8 +24,8 @@ class Item(db.Model):
 		return '<Item %r>' % self.id
 
 	def __str__(self) -> str:
-		return self.name + " " + self.category + " " + self.quantity + " " + self.date_expire + " " + self.location
-
+		return self.name + " " + self.category + " " + \
+			self.quantity + " " + self.date_expire + " " + self.location
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -84,7 +89,6 @@ def update(id):
 
 	else:
 		return render_template('update.html', item=item)
-
 
 
 if __name__ == "__main__":
