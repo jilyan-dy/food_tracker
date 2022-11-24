@@ -1,23 +1,27 @@
-from database_credentials import USERNAME, PASSWORD
+from credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
 from datetime import datetime
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import login_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from webforms import LoginForm, UserForm
 
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + \
-	USERNAME + ':' + PASSWORD + '@localhost/food_tracker_db'
+	USERNAME + ':' + PASSWORD + '@localhost/' + DBNAME
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = SECRET_KEY
 db = SQLAlchemy(app)
 
 
-class Users(db.Model):
+class Users(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(20), nullable=False)
-	email = db.Column(db.String(64), nullable=False)
-	password = db.Column(db.String(128), nullable=False)
+	username = db.Column(db.String(20), nullable=False, unique=True)
+	email = db.Column(db.String(64), nullable=False, unique=True)
+	password_hash = db.Column(db.String(128), nullable=False)
+	date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
 	@property
 	def password(self):
@@ -31,7 +35,7 @@ class Users(db.Model):
 		return check_password_hash(self.password_hash, password)
 
 	def __repr__(self):
-		return '<Item %r>' % self.id
+		return '<User %r>' % self.id
 
 	def __str__(self) -> str:
 		return self.username + " " + self.email
@@ -39,7 +43,7 @@ class Users(db.Model):
 
 class Item(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	# owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	name = db.Column(db.String(64), nullable=False)
 	category = db.Column(db.String(64), nullable=False)
 	quantity = db.Column(db.Integer, nullable=False)
@@ -55,8 +59,61 @@ class Item(db.Model):
 			self.quantity + " " + self.date_expire + " " + self.location
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['GET'])
 def index():
+	return render_template('index.html')
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def add_user():
+	user = None
+	form = UserForm()
+	if form.validate_on_submit():
+		valid_info = Users.query.filter(
+			(Users.email == form.email.data) | (Users.username == form.username.data)).first()
+		if valid_info is None:
+			password = generate_password_hash(form.password.data, "sha256")
+			user = Users(
+				username=form.username.data,
+				email=form.email.data,
+				password=password)
+			db.session.add(user)
+			db.session.commit()
+
+			flash("User Added Successfully!")
+
+		else:
+			flash("User Already Exists")
+
+		form.username.data = ''
+		form.email.data = ''
+		form.password.data = ''
+
+	return render_template(
+		"signup.html",
+		form=form,
+		username=user)
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+	form = LoginForm()
+	if form.validate_on_submit():
+		user = Users.query.filter_by(username=form.username.data).first()
+		if user:
+			if check_password_hash(user.password_hash, form.password.data):
+				login_user(user)
+				return redirect('/items')
+			else:
+				flash("Wrong Password - Try Again!")
+		else:
+			flash("That User Doesn't Exist! Try Again...")
+
+	return render_template('login.html', form=form)
+
+
+@app.route('/items', methods=['POST', 'GET'])
+def add_item():
 	if request.method == 'POST':
 		item_name = request.form['name']
 		item_category = request.form['category']
@@ -74,7 +131,7 @@ def index():
 		try:
 			db.session.add(new_item)
 			db.session.commit()
-			return redirect('/')
+			return redirect('/items')
 		except Exception as e:
 			# return str(e)
 			# return new_item.__str__()
@@ -82,23 +139,23 @@ def index():
 
 	else:
 		items = Item.query.order_by(Item.date_expire).all()
-		return render_template('index.html', items=items)
+		return render_template('item_list.html', items=items)
 
 
 @app.route('/delete/<int:id>')
-def delete(id):
+def item_delete(id):
 	item_to_delete = Item.query.get_or_404(id)
 
 	try:
 		db.session.delete(item_to_delete)
 		db.session.commit()
-		return redirect('/')
+		return redirect('/items')
 	except Exception as e:
 		return "There was an issue with delete the item."
 
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
+def item_update(id):
 	item = Item.query.get_or_404(id)
 
 	if request.method == 'POST':
@@ -110,12 +167,12 @@ def update(id):
 
 		try:
 			db.session.commit()
-			return redirect('/')
+			return redirect('/items')
 		except Exception as e:
 			return "There was an issue with updating this item."	
 
 	else:
-		return render_template('update.html', item=item)
+		return render_template('item_update.html', item=item)
 
 
 if __name__ == "__main__":

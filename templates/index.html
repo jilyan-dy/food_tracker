@@ -2,53 +2,21 @@
 
 
 {% block head %}
-<title> Person's Items </title>
+<title> Home </title>
 {% endblock %}
 
 
 {% block body %}
 <div class="content">
-	<h1 style="text-align: center">Item List</h1>
-	{% if items|length < 1 %}
-	<h4> There are no items. Add below.</h4>
-
-	{% else %}
-	<table>
-		<tr>
-			<th>Item</th>
-			<th>Category</th>
-			<th>Quantity</th>
-			<th>Expiration Date</th>
-			<th>Location Stored</th>
-			<th>Actions</th>
-		</tr>
-		{% for item in items %}
-			<tr>
-				<td>{{ item.name }}</td>
-				<td>{{ item.category }}</td>
-				<td>{{ item.quantity }}</td>
-				<td>{{ item.date_expire.date() }}</td>
-				<td>{{ item.location }}</td>
-				<td>
-					<a href="/update/{{item.id}}">Update</a>
-					<br>
-					<a href="/delete/{{item.id}}">Delete</a>
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
-	{% endif %}
-
-	<div class="form">
-		<form action="/" method="POST">
-			<input type="text" name="name" id="name">
-			<input type="text" name="category" id="category">
-			<input type="number" name="quantity" id="quantity">
-			<input type="date" name="date_expire" id="date_expire">
-			<input type="text" name="location" id="location">
-			<input type="submit" value="Add">
-		</form>
-	</div>
+	<h1 style="text-align: center">Welcome ShiDa Fam!</h1>
+	
+	<a href="/login">
+		<button>Login</button>
+	</a>
+	
+	<a href="/signup">
+		<button>Sign up</button>
+	</a>
 	
 </div>
 {% endblock %}
