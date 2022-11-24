@@ -1,8 +1,9 @@
 from credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user
+from flask_login import (
+	UserMixin, login_user, LoginManager, login_required, logout_user, current_user)
 from werkzeug.security import generate_password_hash, check_password_hash
 from webforms import LoginForm, UserForm, ItemForm
 
@@ -80,6 +81,7 @@ def add_user():
 	if form.validate_on_submit():
 		valid_info = Users.query.filter(
 			(Users.email == form.email.data) | (Users.username == form.username.data)).first()
+
 		if valid_info is None:
 			user = Users(
 				username=form.username.data,
@@ -91,7 +93,6 @@ def add_user():
 				db.session.commit()
 
 				print("User Added Successfully!")
-
 				return redirect('/login')
 
 			except Exception as e:
@@ -110,36 +111,42 @@ def add_user():
 		form=form)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
 	form = LoginForm()
 	if form.validate_on_submit():
 		user = Users.query.filter_by(username=form.username.data).first()
+
 		if user:
+
 			if check_password_hash(user.password_hash, form.password.data):
 				login_user(user)
 				return redirect('/items')
+
 			else:
 				print("Wrong Password - Try Again!")
+
 		else:
 			print("That User Doesn't Exist! Try Again...")
 
 	return render_template('login.html', form=form)
 
 
-@app.route('/logout', methods=['POST', 'GET'])
+@app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
 	logout_user()
 	return redirect('/')
 
 
-@app.route('/items', methods=['POST', 'GET'])
+@app.route('/items', methods=['GET', 'POST'])
 @login_required
 def add_item():
 	form = ItemForm()
+
 	if form.validate_on_submit():
 		valid_info = Item.query.filter(Item.name == form.name.data).first()
+
 		if valid_info is None:
 			item = Item(
 				name=form.name.data,
@@ -153,7 +160,6 @@ def add_item():
 				db.session.commit()
 
 				print("Item Added Successfully!")
-
 				return redirect('/items')
 
 			except Exception as e:
@@ -169,6 +175,9 @@ def add_item():
 		form.location.data = ''
 		form.note.data = ''
 
+	else:
+		print("Invalid date.")
+
 	items = Item.query.order_by(Item.date_expire).all()
 
 	return render_template(
@@ -177,39 +186,60 @@ def add_item():
 		items=items)
 
 
-@app.route('/delete/<int:id>')
+@app.route('/items/delete/<int:id>')
 @login_required
-def item_delete(id):
+def delete_item(id):
 	item_to_delete = Item.query.get_or_404(id)
 
 	try:
 		db.session.delete(item_to_delete)
 		db.session.commit()
 		return redirect('/items')
+
 	except Exception as e:
 		return "There was an issue with delete the item."
 
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
+@app.route('/items/update/<int:id>', methods=['GET', 'POST'])
 @login_required
-def item_update(id):
+def update_item(id):
 	item = Item.query.get_or_404(id)
+	form = ItemForm()
 
-	if request.method == 'POST':
-		item.name = request.form['name']
-		item.category = request.form['category']
-		item.quantity = request.form['quantity']
-		item.date_expire = datetime.strptime(request.form['date_expire'], '%Y-%m-%d')
-		item.location = request.form['location']
+	if form.validate_on_submit():
+		item.name = form.name.data
+		item.category = form.category.data
+		item.quantity = form.quantity.data
+		item.date_expire = form.date_expire.data
+		item.location = form.location.data
+		item.note = form.note.data
 
 		try:
 			db.session.commit()
 			return redirect('/items')
+
 		except Exception as e:
-			return "There was an issue with updating this item."	
+			return "There was an issue with updating this item."
 
 	else:
-		return render_template('item_update.html', item=item)
+		form.name.data = item.name
+		form.category.data = item.category
+		form.quantity.data = item.quantity
+		form.date_expire.data = item.date_expire
+		form.location.data = item.location
+		form.note.data = item.note
+
+		return render_template('item_update.html', form=form)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+	return render_template("404.html"), 404
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+	return render_template("500.html"), 500
 
 
 if __name__ == "__main__":
