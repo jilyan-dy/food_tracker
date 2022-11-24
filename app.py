@@ -2,7 +2,7 @@ from credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_user, UserMixin
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from webforms import LoginForm, UserForm
 
@@ -15,12 +15,21 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = SECRET_KEY
 db = SQLAlchemy(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+	return Users.query.get(int(user_id))
+
 
 class Users(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), nullable=False, unique=True)
 	email = db.Column(db.String(64), nullable=False, unique=True)
-	password_hash = db.Column(db.String(128), nullable=False)
+	password_hash = db.Column(db.String(255), nullable=False)
 	date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
 	@property
@@ -72,18 +81,21 @@ def add_user():
 		valid_info = Users.query.filter(
 			(Users.email == form.email.data) | (Users.username == form.username.data)).first()
 		if valid_info is None:
-			password = generate_password_hash(form.password.data, "sha256")
 			user = Users(
 				username=form.username.data,
 				email=form.email.data,
-				password=password)
+				password=form.password.data)
 			db.session.add(user)
 			db.session.commit()
 
-			flash("User Added Successfully!")
+			a = Users.query.filter_by(username=form.username.data).first()
+			print(a.password_hash)
+			print("User Added Successfully!")
+
+			return redirect('/login')
 
 		else:
-			flash("User Already Exists")
+			print("User Already Exists")
 
 		form.username.data = ''
 		form.email.data = ''
@@ -91,8 +103,7 @@ def add_user():
 
 	return render_template(
 		"signup.html",
-		form=form,
-		username=user)
+		form=form)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -105,14 +116,22 @@ def login():
 				login_user(user)
 				return redirect('/items')
 			else:
-				flash("Wrong Password - Try Again!")
+				print("Wrong Password - Try Again!")
 		else:
-			flash("That User Doesn't Exist! Try Again...")
+			print("That User Doesn't Exist! Try Again...")
 
 	return render_template('login.html', form=form)
 
 
+@app.route('/logout', methods=['POST', 'GET'])
+@login_required
+def logout():
+	logout_user()
+	return redirect('/')
+
+
 @app.route('/items', methods=['POST', 'GET'])
+@login_required
 def add_item():
 	if request.method == 'POST':
 		item_name = request.form['name']
@@ -122,11 +141,12 @@ def add_item():
 		if item_date_expire == "":
 			item_date_expire = datetime.now().date()
 		item_location = request.form['location']
-		new_item = Item(name=item_name,
-						category=item_category,
-						quantity=item_quantity,
-						date_expire=item_date_expire,
-						location=item_location)
+		new_item = Item(
+			name=item_name,
+			category=item_category,
+			quantity=item_quantity,
+			date_expire=item_date_expire,
+			location=item_location)
 
 		try:
 			db.session.add(new_item)
@@ -143,6 +163,7 @@ def add_item():
 
 
 @app.route('/delete/<int:id>')
+@login_required
 def item_delete(id):
 	item_to_delete = Item.query.get_or_404(id)
 
@@ -155,6 +176,7 @@ def item_delete(id):
 
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
+@login_required
 def item_update(id):
 	item = Item.query.get_or_404(id)
 
