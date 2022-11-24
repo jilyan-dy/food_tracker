@@ -39,16 +39,30 @@
 	</table>
 	{% endif %}
 
-	<div class="form">
-		<form action="/" method="POST">
-			<input type="text" name="name" id="name">
-			<input type="text" name="category" id="category">
-			<input type="number" name="quantity" id="quantity">
-			<input type="date" name="date_expire" id="date_expire">
-			<input type="text" name="location" id="location">
-			<input type="submit" value="Add">
-		</form>
-	</div>
+	<form method = "POST">
+		<!-- generates token -->
+		{{ form.hidden_tag() }}
+
+		{{ form.name.label }}
+		{{ form.name() }}
+		<br/>
+		{{ form.category.label }}
+		{{ form.category() }}
+		<br/>
+		{{ form.quantity.label }}
+		{{ form.quantity() }}
+		<br/>
+		{{ form.date_expire.label }}
+		{{ form.date_expire() }}
+		<br/>
+		{{ form.location.label }}
+		{{ form.location() }}
+		<br/>
+		{{ form.note.label }}
+		{{ form.note() }}
+		<br/>
+		{{ form.submit() }}
+	</form>
 	
 </div>
 {% endblock %}

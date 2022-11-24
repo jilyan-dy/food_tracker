@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from webforms import LoginForm, UserForm
+from webforms import LoginForm, UserForm, ItemForm
 
 
 app = Flask(__name__)
@@ -85,14 +85,18 @@ def add_user():
 				username=form.username.data,
 				email=form.email.data,
 				password=form.password.data)
-			db.session.add(user)
-			db.session.commit()
 
-			a = Users.query.filter_by(username=form.username.data).first()
-			print(a.password_hash)
-			print("User Added Successfully!")
+			try:
+				db.session.add(user)
+				db.session.commit()
 
-			return redirect('/login')
+				print("User Added Successfully!")
+
+				return redirect('/login')
+
+			except Exception as e:
+				# return str(e)
+				return "There was an issue adding your info. Please try again."
 
 		else:
 			print("User Already Exists")
@@ -133,33 +137,44 @@ def logout():
 @app.route('/items', methods=['POST', 'GET'])
 @login_required
 def add_item():
-	if request.method == 'POST':
-		item_name = request.form['name']
-		item_category = request.form['category']
-		item_quantity = request.form['quantity']
-		item_date_expire = request.form['date_expire']
-		if item_date_expire == "":
-			item_date_expire = datetime.now().date()
-		item_location = request.form['location']
-		new_item = Item(
-			name=item_name,
-			category=item_category,
-			quantity=item_quantity,
-			date_expire=item_date_expire,
-			location=item_location)
+	form = ItemForm()
+	if form.validate_on_submit():
+		valid_info = Item.query.filter(Item.name == form.name.data).first()
+		if valid_info is None:
+			item = Item(
+				name=form.name.data,
+				category=form.category.data,
+				quantity=form.quantity.data,
+				date_expire=form.date_expire.data,
+				location=form.location.data,
+				note=form.note.data)
+			try:
+				db.session.add(item)
+				db.session.commit()
 
-		try:
-			db.session.add(new_item)
-			db.session.commit()
-			return redirect('/items')
-		except Exception as e:
-			# return str(e)
-			# return new_item.__str__()
-			return "There was an issue with adding your item."
+				print("Item Added Successfully!")
 
-	else:
-		items = Item.query.order_by(Item.date_expire).all()
-		return render_template('item_list.html', items=items)
+				return redirect('/items')
+
+			except Exception as e:
+				# return str(e)
+				return "There was an issue with adding your item."
+
+		else:
+			print("Item Already Exists. Consider updating exiting item")
+
+		form.name.data = ''
+		form.category.data = ''
+		form.quantity.data = ''
+		form.location.data = ''
+		form.note.data = ''
+
+	items = Item.query.order_by(Item.date_expire).all()
+
+	return render_template(
+		"item_list.html",
+		form=form,
+		items=items)
 
 
 @app.route('/delete/<int:id>')
