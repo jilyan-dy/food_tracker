@@ -1,0 +1,18 @@
+$primaryColor: rgb(54, 80, 113);
+$secondaryColor: rgb(248, 235, 219);
+$tertiaryColor: rgb(186, 202, 225);
+$publicationColor: rgb(62, 62, 62);
+
+$width: 768px;
+
+@mixin mobile{
+    @media (max-width: #{$width}) {
+        @content
+    }
+}
+
+@mixin tablet{
+    @media (max-width: #{1170px}) {
+        @content
+    }
+}
