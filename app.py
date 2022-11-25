@@ -1,11 +1,15 @@
-from credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
-from datetime import datetime
 from flask import Flask, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
 	UserMixin, login_user, LoginManager, login_required, logout_user, current_user)
+from flask_migrate import Migrate
+
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
 from webforms import LoginForm, UserForm, ItemForm
+
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -15,6 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + \
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = SECRET_KEY
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -23,15 +28,17 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-	return Users.query.get(int(user_id))
+	return User.query.get(int(user_id))
 
 
-class Users(db.Model, UserMixin):
+class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), nullable=False, unique=True)
 	email = db.Column(db.String(64), nullable=False, unique=True)
 	password_hash = db.Column(db.String(255), nullable=False)
 	date_added = db.Column(db.DateTime, default=datetime.utcnow)
+	admin = db.Column(db.Boolean, default=False)
+	items = db.relationship('Item', backref='owner')
 
 	@property
 	def password(self):
@@ -48,12 +55,12 @@ class Users(db.Model, UserMixin):
 		return '<User %r>' % self.id
 
 	def __str__(self) -> str:
-		return self.username + " " + self.email
+		return self.username + " " + self.email + " " + self.admin
 
 
 class Item(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	# owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	name = db.Column(db.String(64), nullable=False)
 	category = db.Column(db.String(64), nullable=False)
 	quantity = db.Column(db.Integer, nullable=False)
@@ -74,16 +81,44 @@ def index():
 	return render_template('index.html')
 
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	form = LoginForm()
+	if form.validate_on_submit():
+		user = User.query.filter_by(username=form.username.data).first()
+
+		if user:
+
+			if user.verify_password(form.password.data):
+				login_user(user)
+				return redirect('/items')
+
+			else:
+				print("Wrong Password - Try Again!")
+
+		else:
+			print("That User Doesn't Exist! Try Again...")
+
+	return render_template('login.html', form=form)
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+	logout_user()
+	return redirect('/')
+
+
+@app.route('/register', methods=['GET', 'POST'])
 def add_user():
 	user = None
 	form = UserForm()
 	if form.validate_on_submit():
-		valid_info = Users.query.filter(
-			(Users.email == form.email.data) | (Users.username == form.username.data)).first()
+		valid_info = User.query.filter(
+			(User.email == form.email.data) | (User.username == form.username.data)).first()
 
 		if valid_info is None:
-			user = Users(
+			user = User(
 				username=form.username.data,
 				email=form.email.data,
 				password=form.password.data)
@@ -105,38 +140,54 @@ def add_user():
 		form.username.data = ''
 		form.email.data = ''
 		form.password.data = ''
+		form.password2.data = ''
 
 	return render_template(
-		"signup.html",
+		"register.html",
 		form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-	form = LoginForm()
-	if form.validate_on_submit():
-		user = Users.query.filter_by(username=form.username.data).first()
+@app.route('/profile/delete/<int:id>')
+def delete_user(id):
+	user_to_delete = User.query.get_or_404(id)
 
-		if user:
+	if current_user.id == user_to_delete.id:
+		try:
+			db.session.delete(user_to_delete)
+			db.session.commit()
+			return redirect('/items')
 
-			if check_password_hash(user.password_hash, form.password.data):
-				login_user(user)
-				return redirect('/items')
+		except Exception as e:
+			return "There was an issue with delete the user."
 
-			else:
-				print("Wrong Password - Try Again!")
-
-		else:
-			print("That User Doesn't Exist! Try Again...")
-
-	return render_template('login.html', form=form)
+	else:
+		return "You're not allowed to delete other users"
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/profile/update/<int:id>', methods=['GET', 'POST'])
 @login_required
-def logout():
-	logout_user()
-	return redirect('/')
+def update_user(id):
+	user = User.query.get_or_404(id)
+	form = UserForm()
+
+	if form.validate_on_submit():
+		user.username = form.username.data
+		user.email = form.email.data
+		user.password = form.password.data
+
+		try:
+			db.session.commit()
+
+		except Exception as e:
+			return "There was an issue with updating your profile."
+
+	else:
+		form.username.data = user.username
+		form.email.data = user.email
+		form.password.data = ''
+		form.password2.data = ''
+
+	return render_template('profile_update.html', form=form, id=id)
 
 
 @app.route('/items', methods=['GET', 'POST'])
@@ -145,6 +196,7 @@ def add_item():
 	form = ItemForm()
 
 	if form.validate_on_submit():
+		owner_id = current_user.id
 		valid_info = Item.query.filter(Item.name == form.name.data).first()
 
 		if valid_info is None:
@@ -154,7 +206,8 @@ def add_item():
 				quantity=form.quantity.data,
 				date_expire=form.date_expire.data,
 				location=form.location.data,
-				note=form.note.data)
+				note=form.note.data,
+				owner_id=owner_id)
 			try:
 				db.session.add(item)
 				db.session.commit()
@@ -175,10 +228,7 @@ def add_item():
 		form.location.data = ''
 		form.note.data = ''
 
-	else:
-		print("Invalid date.")
-
-	items = Item.query.order_by(Item.date_expire).all()
+	items = Item.query.filter_by(owner_id=current_user.id).order_by(Item.date_expire).all()
 
 	return render_template(
 		"item_list.html",
@@ -189,47 +239,57 @@ def add_item():
 @app.route('/items/delete/<int:id>')
 @login_required
 def delete_item(id):
-	item_to_delete = Item.query.get_or_404(id)
+	item = Item.query.get_or_404(id)
+	if item.owner_id == current_user.id:
 
-	try:
-		db.session.delete(item_to_delete)
-		db.session.commit()
-		return redirect('/items')
+		try:
+			db.session.delete(item)
+			db.session.commit()
+			return redirect('/items')
 
-	except Exception as e:
-		return "There was an issue with delete the item."
+		except Exception as e:
+			return "There was an issue with delete the item."
+	
+	else:
+		print("You do not have delete access")
+		return "You do not have delete access"
 
 
 @app.route('/items/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_item(id):
 	item = Item.query.get_or_404(id)
-	form = ItemForm()
+	if item.owner_id == current_user.id:
+		form = ItemForm()
 
-	if form.validate_on_submit():
-		item.name = form.name.data
-		item.category = form.category.data
-		item.quantity = form.quantity.data
-		item.date_expire = form.date_expire.data
-		item.location = form.location.data
-		item.note = form.note.data
+		if form.validate_on_submit():
+			item.name = form.name.data
+			item.category = form.category.data
+			item.quantity = form.quantity.data
+			item.date_expire = form.date_expire.data
+			item.location = form.location.data
+			item.note = form.note.data
 
-		try:
-			db.session.commit()
-			return redirect('/items')
+			try:
+				db.session.commit()
+				return redirect('/items')
 
-		except Exception as e:
-			return "There was an issue with updating this item."
+			except Exception as e:
+				return "There was an issue with updating this item."
+
+		else:
+			form.name.data = item.name
+			form.category.data = item.category
+			form.quantity.data = item.quantity
+			form.date_expire.data = item.date_expire
+			form.location.data = item.location
+			form.note.data = item.note
+
+			return render_template('item_update.html', form=form)
 
 	else:
-		form.name.data = item.name
-		form.category.data = item.category
-		form.quantity.data = item.quantity
-		form.date_expire.data = item.date_expire
-		form.location.data = item.location
-		form.note.data = item.note
-
-		return render_template('item_update.html', form=form)
+		print("You do not have edit access")
+		return "You do not have edit access"
 
 
 @app.errorhandler(404)
@@ -238,7 +298,7 @@ def page_not_found(e):
 
 
 @app.errorhandler(500)
-def page_not_found(e):
+def internal_server_error(e):
 	return render_template("500.html"), 500
 
 
