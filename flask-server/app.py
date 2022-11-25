@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from src.database.credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
+from database.credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
 from webforms import LoginForm, UserForm, ItemForm
 
 from datetime import datetime
