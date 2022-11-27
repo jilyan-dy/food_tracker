@@ -1,4 +1,5 @@
 import React from 'react'
+import './navbar.scss';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -13,10 +14,10 @@ function Navbar() {
 				</a>
 			</div>
 			<div className="right">
-				<a href="/profile" className="profile">
+				<a href="/profile">
 					<AccountCircleIcon className="icon"/>
 				</a>
-				<a href="/logout" className="logout">
+				<a href="/logout">
 					<LogoutIcon className='icon'/>
 				</a>
 			</div>
