@@ -81,25 +81,45 @@ def index():
 	return render_template('index.html')
 
 
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+# 	form = LoginForm()
+# 	if form.validate_on_submit():
+# 		user = User.query.filter_by(username=form.username.data).first()
+
+# 		if user:
+
+# 			if user.verify_password(form.password.data):
+# 				login_user(user)
+# 				return redirect('/items')
+
+# 			else:
+# 				print("Wrong Password - Try Again!")
+
+# 		else:
+# 			print("That User Doesn't Exist! Try Again...")
+
+# 	return render_template('login.html', form=form)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-	form = LoginForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by(username=form.username.data).first()
+	content = request.json
+	user = User.query.filter_by(username=content['username']).first()
 
-		if user:
+	if user:
 
-			if user.verify_password(form.password.data):
-				login_user(user)
-				return redirect('/items')
-
-			else:
-				print("Wrong Password - Try Again!")
+		if user.verify_password(content['password']):
+			login_user(user)
+			return redirect('/items')
 
 		else:
-			print("That User Doesn't Exist! Try Again...")
+			print("Wrong Password - Try Again!")
+			return {"Issue": "Wrong Password - Try Again!"}
 
-	return render_template('login.html', form=form)
+	else:
+		print("That User Doesn't Exist! Try Again...")
+		return {"Issue": "That User Doesn't Exist! Try Again..."}
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -109,50 +129,10 @@ def logout():
 	return redirect('/')
 
 
-# @app.route('/register', methods=['GET', 'POST'])
-# def add_user():
-# 	user = None
-# 	form = UserForm()
-# 	if form.validate_on_submit():
-# 		valid_info = User.query.filter(
-# 			(User.email == form.email.data) | (User.username == form.username.data)).first()
-
-# 		if valid_info is None:
-# 			user = User(
-# 				username=form.username.data,
-# 				email=form.email.data,
-# 				password=form.password.data)
-
-# 			try:
-# 				db.session.add(user)
-# 				db.session.commit()
-
-# 				print("User Added Successfully!")
-# 				return redirect('/login')
-
-# 			except Exception as e:
-# 				# return str(e)
-# 				return "There was an issue adding your info. Please try again."
-
-# 		else:
-# 			print("User Already Exists")
-
-# 		form.username.data = ''
-# 		form.email.data = ''
-# 		form.password.data = ''
-# 		form.password2.data = ''
-
-# 	return render_template(
-# 		"register.html",
-# 		form=form)
-
-
 @app.route('/register', methods=['GET', 'POST'])
 def add_user():
 	user = None
 	content = request.json
-	print("got content")
-	print(content['username'])
 	valid_info = User.query.filter(
 		(User.email == content['email']) | (User.username == content['username'])).first()
 	if valid_info is None:
