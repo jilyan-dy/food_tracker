@@ -94,11 +94,11 @@ def login():
 
 		else:
 			print("Wrong Password - Try Again!")
-			return {"Issue": "Wrong Password - Try Again!"}
+			return {"issue": "Wrong Password - Try Again!"}
 
 	else:
 		print("That User Doesn't Exist! Try Again...")
-		return {"Issue": "That User Doesn't Exist! Try Again..."}
+		return {"issue": "That User Doesn't Exist! Try Again..."}
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -130,11 +130,22 @@ def add_user():
 		except Exception as e:
 			# return str(e)
 			print("There was an issue adding your info. Please try again.")
-			return {"Issue": "Failed to add new user"}
+			return {"issue": "Failed to add new user"}
 
 	else:
 		print("User Already Exists")
-		return {"Issue": "User already exists"}
+		return {"issue": "User already exists"}
+
+
+@app.route('/profile')
+@login_required
+def view_user():
+	return {
+		"username": current_user.username,
+		"email": current_user.email,
+		"date_added": current_user.date_added.strftime("%Y-%m-%d"),
+		"admin": current_user.admin
+	}
 
 
 @app.route('/profile/delete/<int:id>')
