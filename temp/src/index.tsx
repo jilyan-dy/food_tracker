@@ -6,6 +6,8 @@ import './index.scss';
 import Navbar from './components/Navbar';
 import App from './pages/App';
 import Register from './pages/Register';
+import Login from './pages/Login';
+import Logout from './pages/Logout';
 
 export default function Index() {
   return (
@@ -14,6 +16,8 @@ export default function Index() {
         <Route path='/' element={<Navbar />}>
           <Route index element={<App />} />
           <Route path='register' element={<Register />} />
+          <Route path='login' element={<Login />} />
+          <Route path='logout' element={<Logout />} />
         </Route>
       </Routes>
     </BrowserRouter>
