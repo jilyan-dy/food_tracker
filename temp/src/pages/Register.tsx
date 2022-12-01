@@ -56,8 +56,8 @@ function Register() {
 				window.location.href = response.url;
 			} else {
 				response.json().then((responseJson) => {
-					console.log(responseJson['Issue'])
-					setIssue(responseJson['Issue'])
+					console.log(responseJson['issue'])
+					setIssue(responseJson['issue'])
 				})
 			}
 		})
