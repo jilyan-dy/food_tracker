@@ -5,9 +5,7 @@ function DeleteProfile() {
 
 	const handleButtonClick = (toDelete: boolean) => {
     if (toDelete) {
-      fetch("/profile/delete", {
-        method: "delete"
-      }).then((response) => {
+      fetch("/profile/delete").then((response) => {
         if (response.redirected) {
           window.location.href = response.url;
         } else {
