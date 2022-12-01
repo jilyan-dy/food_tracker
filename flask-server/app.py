@@ -81,27 +81,6 @@ def index():
 	return render_template('index.html')
 
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-# 	form = LoginForm()
-# 	if form.validate_on_submit():
-# 		user = User.query.filter_by(username=form.username.data).first()
-
-# 		if user:
-
-# 			if user.verify_password(form.password.data):
-# 				login_user(user)
-# 				return redirect('/items')
-
-# 			else:
-# 				print("Wrong Password - Try Again!")
-
-# 		else:
-# 			print("That User Doesn't Exist! Try Again...")
-
-# 	return render_template('login.html', form=form)
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	content = request.json
@@ -115,11 +94,11 @@ def login():
 
 		else:
 			print("Wrong Password - Try Again!")
-			return {"Issue": "Wrong Password - Try Again!"}
+			return {"issue": "Wrong Password - Try Again!"}
 
 	else:
 		print("That User Doesn't Exist! Try Again...")
-		return {"Issue": "That User Doesn't Exist! Try Again..."}
+		return {"issue": "That User Doesn't Exist! Try Again..."}
 
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -151,54 +130,70 @@ def add_user():
 		except Exception as e:
 			# return str(e)
 			print("There was an issue adding your info. Please try again.")
-			return {"Issue": "Failed to add new user"}
+			return {"issue": "Failed to add new user"}
 
 	else:
 		print("User Already Exists")
-		return {"Issue": "User already exists"}
+		return {"issue": "User already exists"}
 
 
-@app.route('/profile/delete/<int:id>')
-def delete_user(id):
-	user_to_delete = User.query.get_or_404(id)
-
-	if current_user.id == user_to_delete.id:
-		try:
-			db.session.delete(user_to_delete)
-			db.session.commit()
-			return redirect('/items')
-
-		except Exception as e:
-			return "There was an issue with delete the user."
-
-	else:
-		return "You're not allowed to delete other users"
-
-
-@app.route('/profile/update/<int:id>', methods=['GET', 'POST'])
+@app.route('/profile')
 @login_required
-def update_user(id):
-	user = User.query.get_or_404(id)
-	form = UserForm()
+def view_user():
+	return {
+		"username": current_user.username,
+		"email": current_user.email,
+		"date_added": current_user.date_added.strftime("%Y-%m-%d"),
+		"admin": current_user.admin
+	}
 
-	if form.validate_on_submit():
-		user.username = form.username.data
-		user.email = form.email.data
-		user.password = form.password.data
 
-		try:
-			db.session.commit()
-
-		except Exception as e:
-			return "There was an issue with updating your profile."
+@app.route('/profile/update', methods=['GET', 'POST'])
+@login_required
+def update_user():
+	if request.method == 'GET':
+		return {
+			"email": current_user.email,
+		}
 
 	else:
-		form.username.data = user.username
-		form.email.data = user.email
-		form.password.data = ''
-		form.password2.data = ''
+		content = request.json
+		user = User.query.get_or_404(current_user.id)
 
-	return render_template('profile_update.html', form=form, id=id)
+		if user.verify_password(content['password']):
+			if content['update'] == "email":
+				user.email = content['email']
+
+			elif content['update'] == "password":
+				user.password = content['newPassword']
+
+			else:
+				return {"issue": "Invalid Request"}
+
+			try:
+				db.session.commit()
+				print("Update Successful")
+				return redirect('/profile')
+
+			except Exception as e:
+				return {"issue": "There was an issue with updating your profile."}
+
+		else:
+			return {"issue": "Incorrect Password"}
+
+
+@app.route('/profile/delete')
+@login_required
+def delete_user():
+	user = User.query.get_or_404(current_user.id)
+	try:
+		db.session.delete(user)
+		db.session.commit()
+		print("Delete Successful")
+		return redirect('/')
+
+	except Exception as e:
+		return {"issue": "There was an issue with delete the user."}
 
 
 @app.route('/items', methods=['GET', 'POST'])

@@ -1,0 +1,10 @@
+@import "../global.scss";
+
+.details{
+	form{
+		display: none;
+		&.active{
+			display: block;
+		}
+	}
+}
