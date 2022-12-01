@@ -81,27 +81,6 @@ def index():
 	return render_template('index.html')
 
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-# 	form = LoginForm()
-# 	if form.validate_on_submit():
-# 		user = User.query.filter_by(username=form.username.data).first()
-
-# 		if user:
-
-# 			if user.verify_password(form.password.data):
-# 				login_user(user)
-# 				return redirect('/items')
-
-# 			else:
-# 				print("Wrong Password - Try Again!")
-
-# 		else:
-# 			print("That User Doesn't Exist! Try Again...")
-
-# 	return render_template('login.html', form=form)
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	content = request.json
