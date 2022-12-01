@@ -26,3 +26,5 @@ temp/yarn-error.log*
 
 flask-server/__pycache__
 flask-server/database
+
+trash

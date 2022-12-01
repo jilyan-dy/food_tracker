@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, request, render_template, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
 	UserMixin, login_user, LoginManager, login_required, logout_user, current_user)
@@ -109,42 +109,73 @@ def logout():
 	return redirect('/')
 
 
+# @app.route('/register', methods=['GET', 'POST'])
+# def add_user():
+# 	user = None
+# 	form = UserForm()
+# 	if form.validate_on_submit():
+# 		valid_info = User.query.filter(
+# 			(User.email == form.email.data) | (User.username == form.username.data)).first()
+
+# 		if valid_info is None:
+# 			user = User(
+# 				username=form.username.data,
+# 				email=form.email.data,
+# 				password=form.password.data)
+
+# 			try:
+# 				db.session.add(user)
+# 				db.session.commit()
+
+# 				print("User Added Successfully!")
+# 				return redirect('/login')
+
+# 			except Exception as e:
+# 				# return str(e)
+# 				return "There was an issue adding your info. Please try again."
+
+# 		else:
+# 			print("User Already Exists")
+
+# 		form.username.data = ''
+# 		form.email.data = ''
+# 		form.password.data = ''
+# 		form.password2.data = ''
+
+# 	return render_template(
+# 		"register.html",
+# 		form=form)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def add_user():
 	user = None
-	form = UserForm()
-	if form.validate_on_submit():
-		valid_info = User.query.filter(
-			(User.email == form.email.data) | (User.username == form.username.data)).first()
+	content = request.json
+	print("got content")
+	print(content['username'])
+	valid_info = User.query.filter(
+		(User.email == content['email']) | (User.username == content['username'])).first()
+	if valid_info is None:
+		user = User(
+			username=content['username'],
+			email=content['email'],
+			password=content['password'])
 
-		if valid_info is None:
-			user = User(
-				username=form.username.data,
-				email=form.email.data,
-				password=form.password.data)
+		try:
+			db.session.add(user)
+			db.session.commit()
 
-			try:
-				db.session.add(user)
-				db.session.commit()
+			print("User Added Successfully!")
+			return redirect('/login')
 
-				print("User Added Successfully!")
-				return redirect('/login')
+		except Exception as e:
+			# return str(e)
+			print("There was an issue adding your info. Please try again.")
+			return {"Issue": "Failed to add new user"}
 
-			except Exception as e:
-				# return str(e)
-				return "There was an issue adding your info. Please try again."
-
-		else:
-			print("User Already Exists")
-
-		form.username.data = ''
-		form.email.data = ''
-		form.password.data = ''
-		form.password2.data = ''
-
-	return render_template(
-		"register.html",
-		form=form)
+	else:
+		print("User Already Exists")
+		return {"Issue": "User already exists"}
 
 
 @app.route('/profile/delete/<int:id>')
