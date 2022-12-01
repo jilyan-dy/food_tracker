@@ -20,7 +20,7 @@ function ViewProfile() {
 	useEffect(() => {
 		fetch("/profile", {
 			method: "get"
-		}).then((response) => response.json()
+		}).then((response) => response.json())
 		.then((responseJson) => {
 			setValues({
 				'username': responseJson['username'],
@@ -29,7 +29,6 @@ function ViewProfile() {
 				'admin': responseJson['admin']
 			})
 		})
-		)
 	}, []);
 
 	const handleLinkClick = (action: string) => {
@@ -54,9 +53,9 @@ function ViewProfile() {
 		<span>{ values['admin'] ? '/' : 'x' }</span>
 		<br />
 
-		<Link onClick={() => handleLinkClick('email')} to='/profile/update'>Change Email</Link>
-		<Link onClick={() => handleLinkClick('password')} to='/profile/delete'>Change Password</Link>
-		<button>Delete Account</button>
+		<Link onClick={() => handleLinkClick('email')} to='update'>Change Email</Link>
+		<Link onClick={() => handleLinkClick('password')} to='update'>Change Password</Link>
+		<Link to='delete'>Delete Account</Link>
 
 	</div>
   )
