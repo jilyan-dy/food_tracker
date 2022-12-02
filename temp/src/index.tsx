@@ -11,6 +11,9 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
 import Profile from './pages/Profile';
+import Items from './pages/Items';
+import ItemsList from './components/ItemsList';
+import AddItem from './components/AddItem';
 import ViewProfile from './components/ViewProfile';
 import EditProfile from './components/EditProfile';
 import DeleteProfile from './components/DeleteProfile';
@@ -31,6 +34,11 @@ export default function Index() {
             <Route path='delete' element={<DeleteProfile />} />
             <Route path='*' element={<App />} />
           </Route>
+          <Route path='items' element={<Items />}>
+            <Route index element={<ItemsList />} />
+            <Route path='add' element={<AddItem />} />
+          </Route>
+          
           <Route path='*' element={<App />} />
         </Route>
       </Routes>
