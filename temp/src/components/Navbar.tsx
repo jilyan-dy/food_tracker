@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './navbar.scss';
 import { Outlet, Link } from "react-router-dom";
 
@@ -6,6 +6,17 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 function Navbar() {
+
+	const handleLogoutClick = () => {
+		fetch("/logout", {
+			method: "post"
+		}).then((response) => {
+			if (response.redirected) {
+				console.log(response)
+				window.location.href = response.url;
+			}
+		})
+	}
   return (
 	<>
 		<div className="topbar">
@@ -19,7 +30,7 @@ function Navbar() {
 					<Link to="/profile">
 						<AccountCircleIcon className="icon"/>
 					</Link>
-					<Link to="/logout">
+					<Link onClick={() => handleLogoutClick()} to="">
 						<LogoutIcon className='icon'/>
 					</Link>
 				</div>
