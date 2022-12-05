@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request, render_template, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
@@ -74,6 +75,17 @@ class Item(db.Model):
 	def __str__(self) -> str:
 		return self.name + " " + self.category + " " + \
 			self.quantity + " " + self.date_expire + " " + self.location
+
+	def to_json(self):
+		return {
+			"id": self.id,
+			"name": self.name,
+			"category": self.category,
+			"quantity": self.quantity,
+			"date_expire": self.date_expire.strftime("%Y-%m-%d"),
+			"location": self.location,
+			"note": self.note,
+		}
 
 
 @app.route('/', methods=['GET'])
@@ -199,50 +211,48 @@ def delete_user():
 @app.route('/items', methods=['GET', 'POST'])
 @login_required
 def add_item():
-	form = ItemForm()
+	if request.method == 'GET':
+		items = Item.query.filter_by(owner_id=current_user.id).order_by(Item.date_expire).all()
+		json_items = json.dumps([item.to_json() for item in items])
+		return json_items
 
-	if form.validate_on_submit():
-		owner_id = current_user.id
-		valid_info = Item.query.filter(Item.name == form.name.data).first()
+	else:
+		content = request.json
+		valid_info = Item.query.filter(Item.name == content['name']).first()
 
 		if valid_info is None:
 			item = Item(
-				name=form.name.data,
-				category=form.category.data,
-				quantity=form.quantity.data,
-				date_expire=form.date_expire.data,
-				location=form.location.data,
-				note=form.note.data,
-				owner_id=owner_id)
+				name=content['name'],
+				category=content['category'],
+				quantity=content['quantity'],
+				date_expire=datetime.strptime(content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date(),
+				location=content['location'],
+				note=content['note'],
+				owner_id=current_user.id
+			)
+
 			try:
 				db.session.add(item)
 				db.session.commit()
 
-				print("Item Added Successfully!")
+				print("Item Successfully Added")
 				return redirect('/items')
 
 			except Exception as e:
-				# return str(e)
-				return "There was an issue with adding your item."
+				return {"issue": "There was an issue adding your item"}
 
 		else:
-			print("Item Already Exists. Consider updating exiting item")
+			valid_info.quantity += content['quantity']
 
-		form.name.data = ''
-		form.category.data = ''
-		form.quantity.data = ''
-		form.location.data = ''
-		form.note.data = ''
+			try:
+				db.session.commit()
+				return {"issue": "Item already exists. Updated quantity instead."}
 
-	items = Item.query.filter_by(owner_id=current_user.id).order_by(Item.date_expire).all()
-
-	return render_template(
-		"item_list.html",
-		form=form,
-		items=items)
+			except Exception as e:
+				return {"issue": "Item already exists. There was an issue updating item."}
 
 
-@app.route('/items/delete/<int:id>')
+@app.route('/items/delete/<int:id>', methods=["DELETE"])
 @login_required
 def delete_item(id):
 	item = Item.query.get_or_404(id)
@@ -254,11 +264,11 @@ def delete_item(id):
 			return redirect('/items')
 
 		except Exception as e:
-			return "There was an issue with delete the item."
-	
+			return {"issue": "There was an issue with delete the item."}
+
 	else:
 		print("You do not have delete access")
-		return "You do not have delete access"
+		return {"issue": "You do not have delete access"}
 
 
 @app.route('/items/update/<int:id>', methods=['GET', 'POST'])
@@ -266,36 +276,70 @@ def delete_item(id):
 def update_item(id):
 	item = Item.query.get_or_404(id)
 	if item.owner_id == current_user.id:
-		form = ItemForm()
+		content = request.json
 
-		if form.validate_on_submit():
-			item.name = form.name.data
-			item.category = form.category.data
-			item.quantity = form.quantity.data
-			item.date_expire = form.date_expire.data
-			item.location = form.location.data
-			item.note = form.note.data
+		valid_edit = Item.query.filter(Item.name == content['name']).first()
+
+		if valid_edit is None:
+			item.name = content['name']
+			item.category = content['category']
+			item.quantity = content['quantity']
+			item.date_expire = datetime.strptime(
+				content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date()
+			item.location = content['location']
+			item.note = content['note']
 
 			try:
 				db.session.commit()
+				print("everything went fine")
 				return redirect('/items')
 
 			except Exception as e:
-				return "There was an issue with updating this item."
+				return {"issue": "There was an issue with updating this item."}
 
 		else:
-			form.name.data = item.name
-			form.category.data = item.category
-			form.quantity.data = item.quantity
-			form.date_expire.data = item.date_expire
-			form.location.data = item.location
-			form.note.data = item.note
+			print("Updated name already exists")
+			return {"issue": "Item already exists"}
 
-			return render_template('item_update.html', form=form)
+	print("You do not have edit access")
+	return {"issue": "You do not have edit access"}
 
-	else:
-		print("You do not have edit access")
-		return "You do not have edit access"
+
+# @app.route('/items/update/<int:id>', methods=['GET', 'POST'])
+# @login_required
+# def update_item(id):
+# 	item = Item.query.get_or_404(id)
+# 	if item.owner_id == current_user.id:
+# 		form = ItemForm()
+
+# 		if form.validate_on_submit():
+# 			item.name = form.name.data
+# 			item.category = form.category.data
+# 			item.quantity = form.quantity.data
+# 			item.date_expire = form.date_expire.data
+# 			item.location = form.location.data
+# 			item.note = form.note.data
+
+# 			try:
+# 				db.session.commit()
+# 				return redirect('/items')
+
+# 			except Exception as e:
+# 				return "There was an issue with updating this item."
+
+# 		else:
+# 			form.name.data = item.name
+# 			form.category.data = item.category
+# 			form.quantity.data = item.quantity
+# 			form.date_expire.data = item.date_expire
+# 			form.location.data = item.location
+# 			form.note.data = item.note
+
+# 			return render_template('item_update.html', form=form)
+
+# 	else:
+# 		print("You do not have edit access")
+# 		return "You do not have edit access"
 
 
 @app.errorhandler(404)
