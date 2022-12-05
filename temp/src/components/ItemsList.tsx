@@ -25,6 +25,7 @@ interface Item {
 function ItemsList() {
 
 	const [rows, setRows] = useState([]);
+	const [deleteIssue, setDeleteIssue] = useState("");
 
 	const COLUMNS = [
 		"Name",
@@ -43,16 +44,33 @@ function ItemsList() {
 		})
 	}, []);
 
-	const handleLinkClick = (item: Item) => {
-		console.log('putting item in react session')
+	const handleUpdateClick = (item: Item) => {
 		ReactSession.set("itemToEdit", item);
-		console.log(ReactSession.get("itemToEdit"))
-		console.log("right after calling reactsession get")
 	};
+
+	const handleDeleteClick = (item: Item) => {
+		fetch(`/items/delete/${item['id' as keyof typeof item]}`, {
+			method: "delete",
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+		}).then((response) => {
+			if (response.redirected) {
+				console.log(response)
+				window.location.href = response.url;
+			} else {
+				response.json().then((responseJson) => {
+					setDeleteIssue(responseJson)
+				})
+			}
+		})
+	}
 
 
   return (
 	<div className="items">
+		<p>{deleteIssue}</p>
 		<TableContainer component={Paper}>
 			<Table className='table' key="items_table">
 				<TableHead key="table_head">
@@ -76,9 +94,9 @@ function ItemsList() {
 									<TableCell key={row['id']+"_cell_location"}>{ LOCATION_CHOICES[row['location']] }</TableCell>
 									<TableCell key={row['id']+"_cell_category"}>{ CATEGORY_CHOICES[row['category']] }</TableCell>
 									<TableCell key={row['id']+"_cell_action"}>
-										<Link onClick={() => handleLinkClick(row)} to="update">Edit</Link>
+										<Link onClick={() => handleUpdateClick(row)} to="update">Edit</Link>
 										<br />
-										<Link onClick={() => handleLinkClick(row)} to="delete">Delete</Link>
+										<Link onClick={() => handleDeleteClick(row)} to="">Delete</Link>
 									</TableCell>
 								</TableRow>
 								<TableRow key={row['id']+"_row_note"}>

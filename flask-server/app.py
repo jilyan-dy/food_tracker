@@ -252,7 +252,7 @@ def add_item():
 				return {"issue": "Item already exists. There was an issue updating item."}
 
 
-@app.route('/items/delete/<int:id>')
+@app.route('/items/delete/<int:id>', methods=["DELETE"])
 @login_required
 def delete_item(id):
 	item = Item.query.get_or_404(id)
@@ -264,11 +264,11 @@ def delete_item(id):
 			return redirect('/items')
 
 		except Exception as e:
-			return "There was an issue with delete the item."
+			return {"issue": "There was an issue with delete the item."}
 
 	else:
 		print("You do not have delete access")
-		return "You do not have delete access"
+		return {"issue": "You do not have delete access"}
 
 
 @app.route('/items/update/<int:id>', methods=['GET', 'POST'])
