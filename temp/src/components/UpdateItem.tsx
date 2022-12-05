@@ -1,17 +1,15 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import { ReactSession }  from 'react-client-session';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import DatePicker from "react-datepicker";
 import "react-datepicker/src/stylesheets/datepicker.scss";
 
-import './itemsList.scss';
 import {ITEM_FORMAT, LOCATION_CHOICES, CATEGORY_CHOICES} from '../constants';
 
-function AddItem() {
-	let date = new Date();
-	date.setDate(date.getDate() + 14)
-	const [dateExpire, setDateExpire] = useState(date);
+function UpdateItem() {
+	const initialDetails = ReactSession.get("itemToEdit");
+	const [dateExpire, setDateExpire] = useState(new Date(initialDetails['date_expire']));
 	const [issue, setIssue] = useState('');
 	const [dateIssue, setDateIssue] = useState('');
 
@@ -23,6 +21,7 @@ function AddItem() {
 			location: "",
 			note: "",
 		},
+		enableReinitialize: true,
 		validationSchema: Yup.object({
 			name: Yup.string()
 				.max(64, "Name too long.")
@@ -37,7 +36,7 @@ function AddItem() {
 		}),
 	
 		onSubmit: (values) => {
-			fetch("/items", {
+			fetch(`/items/update/${initialDetails['id']}`, {
 				method: "post",
 				headers: {
 					'Accept': 'application/json',
@@ -59,6 +58,7 @@ function AddItem() {
 					response.json().then((responseJson) => {
 						console.log(responseJson['issue'])
 						setIssue(responseJson['issue'])
+						console.log(issue)
 					})
 				}
 			})
@@ -78,10 +78,19 @@ function AddItem() {
 		}
 	  }
 
+	  useEffect(() => {
+		formik.setValues({
+			name: initialDetails['name'],
+			category: initialDetails['category'],
+			quantity: initialDetails['quantity'],
+			location: initialDetails['location'],
+			note: initialDetails['note'],
+		})
+	  }, [])
+
   return (
-	<div className="items">
+	<div className='items'>
 		<form onSubmit={formik.handleSubmit} className="items">
-		<div>
 			<h1>Items</h1>
 			<p>{issue ? issue : ''}</p>
 			<div className="fields">
@@ -147,12 +156,11 @@ function AddItem() {
 					<textarea className={ITEM_FORMAT[5].name} name={ITEM_FORMAT[5].name} value={formik.values.note} onChange={formik.handleChange} onBlur={formik.handleBlur} />
 				</div>
 
-				<button disabled={!formik.isValid}>Add Item</button>
+				<button disabled={!formik.isValid}>Save Changes</button>
 			</div>
-		</div>
 		</form>
 	</div>
   )
 }
 
-export default AddItem;
+export default UpdateItem

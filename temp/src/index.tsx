@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import Items from './pages/Items';
 import ItemsList from './components/ItemsList';
 import AddItem from './components/AddItem';
+import UpdateItem from './components/UpdateItem';
 import ViewProfile from './components/ViewProfile';
 import EditProfile from './components/EditProfile';
 import DeleteProfile from './components/DeleteProfile';
@@ -37,6 +38,7 @@ export default function Index() {
           <Route path='items' element={<Items />}>
             <Route index element={<ItemsList />} />
             <Route path='add' element={<AddItem />} />
+            <Route path='update' element={<UpdateItem />} />
           </Route>
           
           <Route path='*' element={<App />} />
