@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { ReactSession }  from 'react-client-session';
 
+import VerifiedIcon from '@mui/icons-material/Verified';
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
+
+import './viewProfile.scss'
+
 interface Values {
   username: String,
   email: String,
@@ -36,27 +41,45 @@ function ViewProfile() {
 	};
 
   return (
-	<div className="details">
-		<label>Username: </label>
-		<span>{ values['username'] }</span>
-		<br/>
-
-		<label>Email: </label>
-		<span>{ values['email'] }</span>
-		<br/>
-		
-		<label>Date Registered: </label>
-		<span>{ values['date_added'] }</span>
-		<br/>
-		
-		<label>Admin Access: </label>
-		<span>{ values['admin'] ? '/' : 'x' }</span>
-		<br />
-
-		<Link onClick={() => handleLinkClick('email')} to='update'>Change Email</Link>
-		<Link onClick={() => handleLinkClick('password')} to='update'>Change Password</Link>
-		<Link to='delete'>Delete Account</Link>
-
+	<div className="view">
+		<h1>Profile</h1>
+		<div className="details">
+			<div className="label">
+				<label>Username : </label>
+				<br />
+				<label>Email : </label>
+				<br />
+				<label>Date Registered : </label>
+				<br />
+				<label>Admin Access : </label>
+			</div>
+			<div className="value">
+				<span>{ values['username'] }</span>
+				<br />
+				<span>{ values['email'] }</span>
+				<br />
+				<span>{ values['date_added'] }</span>
+				<br />
+				<span>{ values['admin'] ? <VerifiedIcon /> : <DoNotDisturbIcon /> }</span>
+			</div>
+		</div>
+		<div className="actions">
+			<Link onClick={() => handleLinkClick('email')} to='update'>
+				<span>
+					Change Email
+				</span>
+			</Link>
+			<Link onClick={() => handleLinkClick('password')} to='update'>
+				<span>
+					Change Password
+				</span>
+			</Link>
+			<Link to='delete'>
+				<span>
+					Delete Account
+				</span>
+			</Link>
+		</div>
 	</div>
   )
 }

@@ -9,7 +9,6 @@ import Navbar from './components/Navbar';
 import App from './pages/App';
 import Register from './pages/Register';
 import Login from './pages/Login';
-import Logout from './pages/Logout';
 import Profile from './pages/Profile';
 import Items from './pages/Items';
 import ItemsList from './components/ItemsList';
@@ -28,7 +27,6 @@ export default function Index() {
           <Route index element={<App />} />
           <Route path='register' element={<Register />} />
           <Route path='login' element={<Login />} />
-          <Route path='logout' element={<Logout />} />
           <Route path='profile' element={<Profile />}>
             <Route index element={<ViewProfile />} />
             <Route path='update' element={<EditProfile />} />

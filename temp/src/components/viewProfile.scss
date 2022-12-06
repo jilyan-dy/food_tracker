@@ -1,0 +1,141 @@
+@import "../global.scss";
+
+.view{
+  background-color: $beigeColor;
+  width: 70%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  h1{
+    font-weight: 700;
+    font-size: 300%;
+    color: $darkGrayColor;
+	padding-bottom: 30px;
+  }
+
+  .details{
+	width: 90%;
+	height: 30%;
+	display: flex;
+	justify-content: center;
+	table-layout: fixed;
+	padding: 40px 0px;
+
+	.label{
+		width: 45%;
+		height: 60%;
+		font-weight: 500;
+		font-size: 150%;
+		color: $grayColor;
+		text-align: right;
+		padding: 15px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+
+		label{
+			padding: 10px 0px;
+		}
+
+		@include mobile{
+			width: 45%;
+			padding: 8px;
+			font-size: 100%;
+		}
+	}
+
+	.value{
+		width: 55%;
+		height: 60%;
+		font-weight: 300;
+		font-size: 150%;
+		color: $grayColor;
+		text-align: left;
+		padding: 15px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+
+		span{
+			padding: 10px 0px;
+		}
+
+		@include mobile{
+			width: 55%;
+			padding: 8px;
+			font-size: 100%;
+		}
+	}
+
+	@include mobile{
+		height: 15%;
+		padding: 10px;
+	}
+  }
+
+  .actions{
+	width: 90%;
+	padding: 30px 0px;
+	display: flex;
+	flex-direction: row;
+	justify-content:space-around;
+
+	a{
+		text-decoration: none;
+		background: none;
+		color: inherit;
+		border: none;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
+		outline: inherit;
+
+		span::before{
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			z-index: -1;
+			background-color: $oliveColor;
+			color: $whiteColor;
+
+			transition: transform 300ms ease-in-out;
+			transform: scaleX(0);
+			transform-origin: left;
+		}
+			
+		span:hover::before,
+		span:focus::before {
+			transform: scaleX(1);
+		}
+
+		span{
+			display: block;
+			padding: 5px 10px;
+			font-weight: 700;
+			font-size: 120%;
+			box-sizing: border-box;
+			color: $oliveColor;
+			position: relative;
+			border: 2px solid $primaryColor;
+			z-index: 1;
+			transition: color 300ms ease-in-out;
+			cursor: pointer;
+		}
+
+		span:hover,
+		span:focus {
+			color: $whiteColor;
+			border: 2px solid $oliveColor;
+		}
+	}
+
+  }
+
+  
+}
