@@ -6,7 +6,10 @@ import './profile.scss';
 function Profile() {
   return (
 	<div className="profile">
-		<Outlet />
+		<div className="view">
+			<h1>Profile</h1>
+			<Outlet />
+		</div>
 	</div>
   )
 }

@@ -41,8 +41,7 @@ function ViewProfile() {
 	};
 
   return (
-	<div className="view">
-		<h1>Profile</h1>
+	<>
 		<div className="details">
 			<div className="label">
 				<label>Username : </label>
@@ -80,7 +79,7 @@ function ViewProfile() {
 				</span>
 			</Link>
 		</div>
-	</div>
+	</>
   )
 }
 

@@ -152,77 +152,97 @@ function EditProfile() {
 
   return (
 	<div className="details">
-		<p>{issue ? issue : ''}</p>
+		<form onSubmit={formik_email.handleSubmit}>
+			<div className={"form " + (toEdit==="email" && "active")}>
+				<p className={'formIssue ' + (issue && "active")}>{ issue }</p>
+				<div className="fields">
+					<div className="field">
+						<label>{ inputs[0].label }</label>
+						<p className={'issue ' + (formik_email.touched.email && formik_email.errors.email && "active")}>{ formik_email.errors.email }</p>
+						<input 
+							className={inputs[0].name}
+							type={inputs[0].type}
+							name={inputs[0].name}
+							value={formik_email.values.email}
+							onChange={formik_email.handleChange}
+							onBlur={formik_email.handleBlur}
+						/>
+					</div>
 
-		<form onSubmit={formik_email.handleSubmit} className={"" + (toEdit==="email" && "active")}>
-			<div className="field">
-				<label>{ inputs[0].label }</label>
-				<p>{formik_email.touched.email && formik_email.errors.email ? formik_email.errors.email : ''}</p>
-				<input 
-					className={inputs[0].name}
-					type={inputs[0].type}
-					name={inputs[0].name}
-					value={formik_email.values.email}
-					onChange={formik_email.handleChange}
-					onBlur={formik_email.handleBlur}
-				/>
+					<div className="field">
+						<label>{ inputs[1].label }</label>
+						<p className={'issue ' + (formik_email.touched.password && formik_email.errors.password && "active")}>{ formik_email.errors.password }</p>
+						<input 
+							className={inputs[1].name}
+							type={inputs[1].type}
+							name={inputs[1].name}
+							value={formik_email.values.password}
+							onChange={formik_email.handleChange}
+							onBlur={formik_email.handleBlur}
+						/>
+					</div>
+					<div className="button">
+						<button disabled={!formik_email.isValid}>
+							<span>
+								Save Changes
+							</span>
+						</button>
+					</div>
+				</div>
 			</div>
-
-			<div className="field">
-				<label>{ inputs[1].label }</label>
-				<p>{formik_email.touched.password && formik_email.errors.password ? formik_email.errors.password : ''}</p>
-				<input 
-					className={inputs[1].name}
-					type={inputs[1].type}
-					name={inputs[1].name}
-					value={formik_email.values.password}
-					onChange={formik_email.handleChange}
-					onBlur={formik_email.handleBlur}
-				/>
-			</div>
-			<button>Save Changes</button>
 		</form>
 
-		<form onSubmit={formik_password.handleSubmit} className={"" + (toEdit==="password" && "active")}>
-			<div className="field">
-				<label>{ inputs[2].label }</label>
-				<p>{formik_password.touched.oldPassword && formik_password.errors.oldPassword ? formik_password.errors.oldPassword : ''}</p>
-				<input 
-					className={inputs[2].name}
-					type={inputs[2].type}
-					name={inputs[2].name}
-					value={formik_password.values.oldPassword}
-					onChange={formik_password.handleChange}
-					onBlur={formik_password.handleBlur}
-				/>
-			</div>
+		<form onSubmit={formik_password.handleSubmit}>
+			<div className={"form " + (toEdit==="password" && "active")}>
+				<p className={'formIssue ' + (issue && "active")}>{ issue }</p>
+				<div className="fields">
+					<div className="field">
+						<label>{ inputs[2].label }</label>
+						<p className={'issue ' + (formik_password.touched.oldPassword && formik_password.errors.oldPassword && "active")}>{ formik_password.errors.oldPassword }</p>
+						<input 
+							className={inputs[2].name}
+							type={inputs[2].type}
+							name={inputs[2].name}
+							value={formik_password.values.oldPassword}
+							onChange={formik_password.handleChange}
+							onBlur={formik_password.handleBlur}
+						/>
+					</div>
 
-			<div className="field">
-				<label>{ inputs[3].label }</label>
-				<p>{formik_password.touched.newPassword && formik_password.errors.newPassword ? formik_password.errors.newPassword : ''}</p>
-				<input 
-					className={inputs[3].name}
-					type={inputs[3].type}
-					name={inputs[3].name}
-					value={formik_password.values.newPassword}
-					onChange={formik_password.handleChange}
-					onBlur={formik_password.handleBlur}
-				/>
-			</div>
+					<div className="field">
+						<label>{ inputs[3].label }</label>
+						<p className={'issue ' + (formik_password.touched.newPassword && formik_password.errors.newPassword && "active")}>{ formik_password.errors.newPassword }</p>
+						<input 
+							className={inputs[3].name}
+							type={inputs[3].type}
+							name={inputs[3].name}
+							value={formik_password.values.newPassword}
+							onChange={formik_password.handleChange}
+							onBlur={formik_password.handleBlur}
+						/>
+					</div>
 
-			<div className="field">
-				<label>{ inputs[4].label }</label>
-				<p>{formik_password.touched.confirmPassword && formik_password.errors.confirmPassword ? formik_password.errors.confirmPassword : ''}</p>
-				<input 
-					className={inputs[4].name}
-					type={inputs[4].type}
-					name={inputs[4].name}
-					value={formik_password.values.confirmPassword}
-					onChange={formik_password.handleChange}
-					onBlur={formik_password.handleBlur}
-				/>
+					<div className="field">
+						<label>{ inputs[4].label }</label>
+						<p className={'issue ' + (formik_password.touched.confirmPassword && formik_password.errors.confirmPassword && "active")}>{ formik_password.errors.confirmPassword }</p>
+						<input 
+							className={inputs[4].name}
+							type={inputs[4].type}
+							name={inputs[4].name}
+							value={formik_password.values.confirmPassword}
+							onChange={formik_password.handleChange}
+							onBlur={formik_password.handleBlur}
+						/>
+					</div>
+					<div className="button">
+						<button disabled={!formik_password.isValid}>
+							<span>
+								Save Changes
+							</span>
+						</button>
+					</div>
+				</div>
 			</div>
-			<button>Save Changes</button>
 		</form>
 
 	</div>
