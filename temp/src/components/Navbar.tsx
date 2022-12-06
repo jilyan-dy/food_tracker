@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import './navbar.scss';
+import { ReactSession }  from 'react-client-session';
 import { Outlet, Link } from "react-router-dom";
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+
+import './navbar.scss';
 
 function Navbar() {
 
@@ -12,6 +14,7 @@ function Navbar() {
 			method: "post"
 		}).then((response) => {
 			if (response.redirected) {
+				ReactSession.set("loggedIn", false);
 				console.log(response)
 				window.location.href = response.url;
 			}
@@ -19,14 +22,14 @@ function Navbar() {
 	}
   return (
 	<>
-		<div className="topbar">
+		<div className="navbar">
 			<div className="wrapper">
 				<div className="left">
 					<Link to='/items' className="logo">
 						<span className="name">Food Inventory</span>
 					</Link>
 				</div>
-				<div className="right">
+				<div className={"right " + (ReactSession.get("loggedIn") && "active")}>
 					<Link to="/profile">
 						<AccountCircleIcon className="icon"/>
 					</Link>

@@ -98,13 +98,14 @@ function Register() {
   return (
     <div className='register'>
 	  <form onSubmit={formik.handleSubmit} className="register">
-		<div>
+		<div className='form'>
 		  <h1>Register</h1>
-		  <p>{issue ? issue : ''}</p>
+		  <p className={'formIssue ' + (issue && "active")}>{ issue }</p>
+
 		  <div className="fields">
 			<div className="field">
 			  <label>{ inputs[0].label }</label>
-			  <p>{formik.touched.username && formik.errors.username ? formik.errors.username : ''}</p>
+			  <p className={'issue ' + (formik.touched.username && formik.errors.username && "active")}>{ formik.errors.username }</p>
 			  <input 
 				className={inputs[0].name}
 				type={inputs[0].type}
@@ -117,7 +118,7 @@ function Register() {
 
 			<div className="field">
 			  <label>{ inputs[1].label }</label>
-			  <p>{formik.touched.email && formik.errors.email ? formik.errors.email : ''}</p>
+			  <p className={'issue ' + (formik.touched.email && formik.errors.email && "active")}>{ formik.errors.email }</p>
 			  <input 
 				className={inputs[1].name}
 				type={inputs[1].type}
@@ -130,7 +131,7 @@ function Register() {
 
 			<div className="field">
 			  <label>{ inputs[2].label }</label>
-			  <p>{formik.touched.password && formik.errors.password ? formik.errors.password : ''}</p>
+			  <p className={'issue ' + (formik.touched.password && formik.errors.password && "active")}>{ formik.errors.password }</p>
 			  <input 
 				className={inputs[2].name}
 				type={inputs[2].type}
@@ -143,7 +144,7 @@ function Register() {
 
 			<div className="field">
 			  <label>{ inputs[3].label }</label>
-			  <p>{formik.touched.confirmPassword && formik.errors.confirmPassword ? formik.errors.confirmPassword : ''}</p>
+			  <p className={'issue ' + (formik.touched.confirmPassword && formik.errors.confirmPassword && "active")}>{ formik.errors.confirmPassword }</p>
 			  <input 
 				className={inputs[3].name}
 				type={inputs[3].type}
@@ -154,7 +155,13 @@ function Register() {
 			  />
 			</div>
 
-			<button>Sign Up</button>
+			<div className="button">
+				<button disabled={!formik.isValid}>
+					<span>
+						Sign Up
+					</span>
+				</button>
+			</div>
 		  </div>
 		</div>
 	  </form>

@@ -39,6 +39,7 @@ class User(db.Model, UserMixin):
 	password_hash = db.Column(db.String(255), nullable=False)
 	date_added = db.Column(db.DateTime, default=datetime.utcnow)
 	admin = db.Column(db.Boolean, default=False)
+	# verfied = db.Column(db.Boolean, default=False)
 	items = db.relationship('Item', backref='owner')
 
 	@property
@@ -67,6 +68,7 @@ class Item(db.Model):
 	quantity = db.Column(db.Integer, nullable=False)
 	date_expire = db.Column(db.DateTime, nullable=False)
 	location = db.Column(db.String(64), nullable=False)
+	# shared = db.Column(db.Boolean, default=False)
 	note = db.Column(db.String(255))
 
 	def __repr__(self):
