@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { ReactSession }  from 'react-client-session';
 
 import './login.scss';
 
@@ -33,6 +34,7 @@ function Login() {
 				})
 			}).then((response) => {
 				if (response.redirected) {
+					ReactSession.set("loggedIn", true);
 					console.log(response)
 					window.location.href = response.url;
 				} else {
@@ -65,13 +67,14 @@ function Login() {
 	  return (
 		<div className='login'>
 		  <form onSubmit={formik.handleSubmit} className="login">
-			<div>
+			<div className='form'>
 			  <h1>Login</h1>
-			  <p>{issue ? issue : ''}</p>
+		  	  <p className={'formIssue ' + (issue && "active")}>{ issue }</p>
+			  
 			  <div className="fields">
 				<div className="field">
 				  <label>{ inputs[0].label }</label>
-				  <p>{formik.touched.username && formik.errors.username ? formik.errors.username : ''}</p>
+			  	  <p className={'issue ' + (formik.touched.username && formik.errors.username && "active")}>{ formik.errors.username }</p>
 				  <input 
 					className={inputs[0].name}
 					type={inputs[0].type}
@@ -84,8 +87,8 @@ function Login() {
 	
 				<div className="field">
 				  <label>{ inputs[1].label }</label>
-				  <p>{formik.touched.password && formik.errors.password ? formik.errors.password : ''}</p>
-				  <input 
+				  <p className={'issue ' + (formik.touched.password && formik.errors.password && "active")}>{ formik.errors.password }</p>
+			  	  <input 
 					className={inputs[1].name}
 					type={inputs[1].type}
 					name={inputs[1].name}
@@ -95,7 +98,13 @@ function Login() {
 				  />
 				</div>
 	
-				<button>Login</button>
+				<div className="button">
+					<button disabled={!formik.isValid}>
+						<span>
+							Login
+						</span>
+					</button>
+				</div>
 			  </div>
 			</div>
 		  </form>
