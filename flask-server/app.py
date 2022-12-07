@@ -201,6 +201,7 @@ def update_user():
 def delete_user():
 	user = User.query.get_or_404(current_user.id)
 	try:
+		logout_user()
 		db.session.delete(user)
 		db.session.commit()
 		print("Delete Successful")

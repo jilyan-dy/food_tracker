@@ -25,7 +25,7 @@ function Navbar() {
 		<div className="navbar">
 			<div className="wrapper">
 				<div className="left">
-					<Link to='/items' className="logo">
+					<Link to={(ReactSession.get("loggedIn") && '/items') || ((!ReactSession.get("loggedIn")) && '/')} className="logo">
 						<span className="name">Food Inventory</span>
 					</Link>
 				</div>

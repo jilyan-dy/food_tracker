@@ -5,6 +5,12 @@ h1{
 	font-size: 300%;
 	color: $darkGrayColor;
 	padding-bottom: 30px;
+	position: relative;
+	top: 15px;
+
+	@include mobile{
+		top: -15px;
+	}
 }
 
 .details{
@@ -12,12 +18,13 @@ h1{
 	height: 30%;
 	display: flex;
 	justify-content: center;
-	table-layout: fixed;
 	padding: 40px 0px;
 
 	.label{
 		width: 45%;
-		height: 60%;
+		height: 95%;
+		position: relative;
+		top: 0px;
 		font-weight: 500;
 		font-size: 150%;
 		color: $grayColor;
@@ -34,13 +41,16 @@ h1{
 		@include mobile{
 			width: 45%;
 			padding: 8px;
-			font-size: 100%;
+			font-weight: 650;
+			font-size: 130%;
 		}
 	}
 
 	.value{
 		width: 55%;
-		height: 60%;
+		height: 95%;
+		position: relative;
+		top: 0px;
 		font-weight: 300;
 		font-size: 150%;
 		color: $grayColor;
@@ -57,13 +67,16 @@ h1{
 		@include mobile{
 			width: 55%;
 			padding: 8px;
-			font-size: 100%;
+			font-weight: 450;
+			font-size: 130%;
 		}
 	}
 
 	@include mobile{
-		height: 35%;
+		height: 40%;
 		padding: 10px;
+		position: relative;
+		top: -20px;
 	}
 }
 
@@ -73,6 +86,7 @@ h1{
 	display: flex;
 	flex-direction: row;
 	justify-content:space-around;
+	align-items: center;
 
 	a{
 		text-decoration: none;

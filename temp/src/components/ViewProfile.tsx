@@ -6,6 +6,7 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 
 import './viewProfile.scss'
+import Popup from './Popup';
 
 interface Values {
   username: String,
@@ -15,12 +16,34 @@ interface Values {
 }
 
 function ViewProfile() {
+	const [open, setOpen] = useState(false);
+	const [issue, setIssue] = useState('');
 	const [values, setValues] = useState<Values>({
 	  username: "",
 	  email: "",
 	  date_added: "",
 	  admin: false,
 	});
+
+	const handleNo = () => {
+		setOpen(false)
+	}
+
+	const handleYes = () => {
+		fetch("/profile/delete").then((response) => {
+			if (response.redirected) {
+			  setOpen(false)
+			  ReactSession.set("loggedIn", false);
+			  window.location.href = response.url;
+			} else {
+			  response.json().then((responseJson) => {
+				console.log(responseJson['issue'])
+				setIssue(responseJson['issue'])
+			  })
+			}
+		})
+	}
+
 
 	useEffect(() => {
 		fetch("/profile", {
@@ -73,12 +96,18 @@ function ViewProfile() {
 					Change Password
 				</span>
 			</Link>
-			<Link to='delete'>
+			<Link onClick={() => setOpen(o => !o)} to=''>
 				<span>
 					Delete Account
 				</span>
 			</Link>
 		</div>
+		{open && <Popup
+			handleNo={handleNo}
+			handleYes={handleYes}
+			issue={issue}
+			content="Are you sure you want to delete your account?"
+		/>}
 	</>
   )
 }

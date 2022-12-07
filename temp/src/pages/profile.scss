@@ -18,5 +18,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    @include mobile{
+      width: 85%;
+      height: 70%;
+      position: fixed;
+      bottom: 75px;
+    }
   }
 }
