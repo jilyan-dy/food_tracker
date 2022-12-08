@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
 
-import "./editProfile.scss";
+import "./updateProfile.scss";
 
 YupPassword(Yup);
 

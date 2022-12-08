@@ -15,7 +15,7 @@ import ItemsList from "./components/ItemsList";
 import AddItem from "./components/AddItem";
 import UpdateItem from "./components/UpdateItem";
 import ViewProfile from "./components/ViewProfile";
-import EditProfile from "./components/EditProfile";
+import EditProfile from "./components/updateProfile";
 
 export default function Index() {
   ReactSession.setStoreType("localStorage");
