@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 
 import './itemsList.scss';
 import {LOCATION_CHOICES, CATEGORY_CHOICES} from '../constants';
+import { SxProps } from '@mui/material';
 
 interface Item {
 	name: string, 
@@ -70,44 +71,52 @@ function ItemsList() {
 
   return (
 	<div className="items">
-		<p>{deleteIssue}</p>
-		<TableContainer component={Paper}>
-			<Table className='table' key="items_table">
-				<TableHead key="table_head">
-					<TableRow key="top_row">
-						<TableCell>{ COLUMNS[0] }</TableCell>
-						<TableCell>{ COLUMNS[1] }</TableCell>
-						<TableCell>{ COLUMNS[2] }</TableCell>
-						<TableCell>{ COLUMNS[3] }</TableCell>
-						<TableCell>{ COLUMNS[4] }</TableCell>
-						<TableCell> Actions </TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody key="table_body">
+		<div className="actions">
+			<Link onClick={() => {}} to=''>
+				<span>
+					Add Item
+				</span>
+			</Link>
+		</div>
+		<p className={'issue ' + (deleteIssue && "active")}>{deleteIssue}</p>
+		<div className={"table_container "+ (rows.length && "active")}>
+			<table className="table">
+				<thead className="table_head">
+					<tr className="top_row">
+						<th>{ COLUMNS[0] }</th>
+						<th>{ COLUMNS[1] }</th>
+						<th>{ COLUMNS[2] }</th>
+						<th>{ COLUMNS[3] }</th>
+						<th>{ COLUMNS[4] }</th>
+						{/* <th>Actions</th> */}
+					</tr>
+				</thead>
+				<tbody className="table_body">
 					{rows.map((row) => {
 						return(
-							<Fragment key={row['id']}>
-								<TableRow key={row['id']+"_row"}>
-									<TableCell key={row['id']+"_cell_name"}>{ row['name'] }</TableCell>
-									<TableCell key={row['id']+"_cell_quantity"}>{ row['quantity'] }</TableCell>
-									<TableCell key={row['id']+"_cell_expire"}>{ row['date_expire'] }</TableCell>
-									<TableCell key={row['id']+"_cell_location"}>{ LOCATION_CHOICES[row['location']] }</TableCell>
-									<TableCell key={row['id']+"_cell_category"}>{ CATEGORY_CHOICES[row['category']] }</TableCell>
-									<TableCell key={row['id']+"_cell_action"}>
-										<Link onClick={() => handleUpdateClick(row)} to="update">Edit</Link>
-										<br />
-										<Link onClick={() => handleDeleteClick(row)} to="">Delete</Link>
-									</TableCell>
-								</TableRow>
-								<TableRow key={row['id']+"_row_note"}>
-									<TableCell key={row['id']+"_cell_note"} colSpan={6}>{ row['note'] }</TableCell>
-								</TableRow>
+							<Fragment>
+								<tr className="rows">
+									<td className='primary_cell'>{ row['name'] }</td>
+									<td className='primary_cell'>{ row['quantity'] }</td>
+									<td className='primary_cell'>{ row['date_expire'] }</td>
+									<td className='primary_cell'>{ LOCATION_CHOICES[row['location']] }</td>
+									<td className='primary_cell'>{ CATEGORY_CHOICES[row['category']] }</td>
+								</tr>
+								<tr className="rows extra">
+									<td colSpan={4} className='secondary_cell note'>{ row['note'] }</td>
+									<td className='secondary_cell item_actions'>
+										<Link onClick={() => handleUpdateClick(row)} to="update">Edit</Link> <Link onClick={() => handleDeleteClick(row)} to="">Delete</Link>
+									</td>
+								</tr>
 							</Fragment>
 						)
 					})}
-				</TableBody>
-			</Table>
-		</TableContainer>
+				</tbody>
+			</table>
+		</div>
+		<div className={"empty " + (!rows.length && "active")}>
+			<h1>No Items in List.<br />Add now!</h1>
+		</div>
 	</div>
   )
 }

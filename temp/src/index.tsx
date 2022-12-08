@@ -16,7 +16,6 @@ import AddItem from './components/AddItem';
 import UpdateItem from './components/UpdateItem';
 import ViewProfile from './components/ViewProfile';
 import EditProfile from './components/EditProfile';
-import DeleteProfile from './components/DeleteProfile';
 
 export default function Index() {
   ReactSession.setStoreType("localStorage");
@@ -30,7 +29,6 @@ export default function Index() {
           <Route path='profile' element={<Profile />}>
             <Route index element={<ViewProfile />} />
             <Route path='update' element={<EditProfile />} />
-            <Route path='delete' element={<DeleteProfile />} />
             <Route path='*' element={<App />} />
           </Route>
           <Route path='items' element={<Items />}>

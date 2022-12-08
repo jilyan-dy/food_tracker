@@ -126,9 +126,10 @@ h1{
 			font-weight: 700;
 			font-size: 120%;
 			box-sizing: border-box;
+			border-radius: 5px;
 			color: $oliveColor;
 			position: relative;
-			border: 2px solid $primaryColor;
+			border: 2px solid $grayColor;
 			z-index: 1;
 			transition: color 300ms ease-in-out;
 			cursor: pointer;
