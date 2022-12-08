@@ -1,96 +1,96 @@
 @import "../global.scss";
 
-.overlay{
-	position: fixed;
-	left: 0;
-	top: 0;
-	background-color: $transGrayColor;
-	width: 100%;
-	height: 100vh;
-	z-index: 1;
+.overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: $transGrayColor;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
 
-	.content{
-		position: absolute;
-		width: 40%;
-		height: 20%;
-		background-color: $whiteColor;
-		border: 1px solid $oliveColor;
-		border-radius: 10px;
-		margin: 20px auto;
-		padding: 20px;
-		overflow: auto;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		left: 50%;
-		top: 50%;
-		-webkit-transform: translate(-50%, -50%);
-		transform: translate(-50%, -50%);
+  .content {
+    position: absolute;
+    width: 40%;
+    height: 20%;
+    background-color: $whiteColor;
+    border: 1px solid $oliveColor;
+    border-radius: 10px;
+    margin: 20px auto;
+    padding: 20px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 
-		.close{
-			cursor: pointer;
-			border: none;
-			background: none;
-			font-size: 200%;
-			font-weight: 700;
-			color: $oliveColor;
-			position: absolute;
-			right: 30px;
-			top: 15px;
-			z-index: 1;
-		}
+    .close {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 200%;
+      font-weight: 700;
+      color: $oliveColor;
+      position: absolute;
+      right: 30px;
+      top: 15px;
+      z-index: 1;
+    }
 
-		.prompt {
-			width: 95%;
-			height: 80%;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			margin-bottom: 30px;
+    .prompt {
+      width: 95%;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30px;
 
-			.issue{
-				font-size: 90%;
-				font-weight: 400;
-				color: $errorColor;
-				text-align: center;
-			}
+      .issue {
+        font-size: 90%;
+        font-weight: 400;
+        color: $errorColor;
+        text-align: center;
+      }
 
-			.prompt-txt{
-				font-size: 120%;
-				font-weight: 600;
-				text-align: center;
-			}
-		}
+      .prompt-txt {
+        font-size: 120%;
+        font-weight: 600;
+        text-align: center;
+      }
+    }
 
-		.response{
-			width: 80%;
-			display: flex;
-			flex-direction: row;
-			justify-content: space-around;
-			position: relative;
-			top: -20px;
+    .response {
+      width: 80%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      position: relative;
+      top: -20px;
 
-			.btn{
-				cursor: pointer;
-				background: none;
-				border: none;
-				font-size: 100%;
-				font-weight: 600;
-				color: $whiteColor;
-				width: 70px;
-				height: 35px;
-				border-radius: 5px;
+      .btn {
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 100%;
+        font-weight: 600;
+        color: $whiteColor;
+        width: 70px;
+        height: 35px;
+        border-radius: 5px;
 
-				&.yes{
-					background-color: $errorColor;
-				}
+        &.yes {
+          background-color: $errorColor;
+        }
 
-				&.no{
-					background-color: $oliveColor;
-				}
-			}
-		}
-	}
+        &.no {
+          background-color: $oliveColor;
+        }
+      }
+    }
+  }
 }

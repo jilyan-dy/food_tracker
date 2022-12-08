@@ -1,115 +1,114 @@
 @import "../global.scss";
 
-.details{
-	form{
-		.form{
-			display: none;
+.details {
+  form {
+    .form {
+      display: none;
 
-			&.active{
-				display: block;
+      &.active {
+        display: block;
 
-				.formIssue{
-					display: none;
+        .formIssue {
+          display: none;
 
-					&.active{
-						display: block;
-						font-weight: 200;
-						font-size: 100%;
-						color: $errorColor;
-						margin-bottom: 0px;
-					}
-				}
+          &.active {
+            display: block;
+            font-weight: 200;
+            font-size: 100%;
+            color: $errorColor;
+            margin-bottom: 0px;
+          }
+        }
 
-				.fields{
-					
-					.field{
-						width: 98%;
+        .fields {
+          .field {
+            width: 98%;
 
-						label{
-							font-weight: 300;
-							font-size: 130%;
-						}
-						
-						.issue{
-							display: none;
+            label {
+              font-weight: 300;
+              font-size: 130%;
+            }
 
-							&.active{
-								display: block;
-								font-weight: 200;
-								font-size: 90%;
-								color: $errorColor;
-								padding: 4px inherit 3px 5px;
-								margin: 0px;
-							}
-						}
+            .issue {
+              display: none;
 
-						input{
-							width: 98%;
-							margin: 8px 3px 15px 3px;
-						}
-					}
+              &.active {
+                display: block;
+                font-weight: 200;
+                font-size: 90%;
+                color: $errorColor;
+                padding: 4px inherit 3px 5px;
+                margin: 0px;
+              }
+            }
 
-					.button{
-						width: 100%;
-						display: flex;
-						justify-content: center;
-						flex-direction: column;
-						align-items: center;
-						margin-top: 15px;
+            input {
+              width: 98%;
+              margin: 8px 3px 15px 3px;
+            }
+          }
 
-						button{
-							background: none;
-							color: inherit;
-							border: none;
-							padding: 0;
-							font: inherit;
-							cursor: pointer;
-							outline: inherit;
-				  
-							span::before{
-								content: '';
-								position: absolute;
-								top: 0;
-								left: 0;
-								bottom: 0;
-								right: 0;
-								z-index: -1;
-								background-color: $oliveColor;
-								color: $whiteColor;
-				  
-								transition: transform 300ms ease-in-out;
-								transform: scaleX(0);
-								transform-origin: left;
-							}
-								
-							span:hover::before,
-							span:focus::before {
-								transform: scaleX(1);
-							}
-				  
-							span{
-								display: block;
-								padding: 5px 10px;
-								font-weight: 700;
-								font-size: 14px;
-								box-sizing: border-box;
-								color: $oliveColor;
-								position: relative;
-								border: 2px solid $primaryColor;
-								z-index: 1;
-								transition: color 300ms ease-in-out;
-								cursor: pointer;
-							}
-				  
-							span:hover,
-							span:focus {
-								color: $whiteColor;
-								border: 2px solid $oliveColor;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+          .button {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+
+            button {
+              background: none;
+              color: inherit;
+              border: none;
+              padding: 0;
+              font: inherit;
+              cursor: pointer;
+              outline: inherit;
+
+              span::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                z-index: -1;
+                background-color: $oliveColor;
+                color: $whiteColor;
+
+                transition: transform 300ms ease-in-out;
+                transform: scaleX(0);
+                transform-origin: left;
+              }
+
+              span:hover::before,
+              span:focus::before {
+                transform: scaleX(1);
+              }
+
+              span {
+                display: block;
+                padding: 5px 10px;
+                font-weight: 700;
+                font-size: 14px;
+                box-sizing: border-box;
+                color: $oliveColor;
+                position: relative;
+                border: 2px solid $primaryColor;
+                z-index: 1;
+                transition: color 300ms ease-in-out;
+                cursor: pointer;
+              }
+
+              span:hover,
+              span:focus {
+                color: $whiteColor;
+                border: 2px solid $oliveColor;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

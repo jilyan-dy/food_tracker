@@ -22,6 +22,7 @@ export const ITEM_FORMAT = [
   },
   {
 	name: "category",
+	type: "dropdown",
 	label: "Category",
   },
   {
@@ -30,14 +31,17 @@ export const ITEM_FORMAT = [
 	label: "Quantity",
   },
   {
+	type: "date",
 	label: "Expiration Date",
   },
   {
 	name: "location",
+	type: "dropdown",
 	label: "Location",
   },
   {
 	name: "note",
+	type: "textarea",
 	label: "Note",
   }
 ]
