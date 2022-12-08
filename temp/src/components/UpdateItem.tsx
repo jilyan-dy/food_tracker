@@ -167,7 +167,7 @@ function UpdateItem() {
 
             <div className="field">
               <label>{ITEM_FORMAT[3].label}</label>
-              <p>{dateIssue}</p>
+              <p className={"issue " + (dateIssue && "active")}>{dateIssue}</p>
               <DatePicker
                 className={"input " + ITEM_FORMAT[3].type}
                 selected={dateExpire}

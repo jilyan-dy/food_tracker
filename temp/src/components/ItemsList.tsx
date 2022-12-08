@@ -4,8 +4,10 @@ import { ReactSession } from "react-client-session";
 
 import { LOCATION_CHOICES, CATEGORY_CHOICES } from "../constants";
 import "./itemsList.scss";
+import Popup from "./Popup";
 
 interface Item {
+  id: string;
   name: string;
   category: string;
   quantity: number;
@@ -15,6 +17,8 @@ interface Item {
 }
 
 function ItemsList() {
+  const [open, setOpen] = useState(false);
+  const [toDelete, setToDelete] = useState("-1");
   const [rows, setRows] = useState([]);
   const [deleteIssue, setDeleteIssue] = useState("");
 
@@ -34,8 +38,17 @@ function ItemsList() {
     ReactSession.set("itemToEdit", item);
   };
 
-  const handleDeleteClick = (item: Item) => {
-    fetch(`/items/delete/${item["id" as keyof typeof item]}`, {
+  const handleDeleteClick = (item: string) => {
+    setOpen(!open);
+    setToDelete(item);
+  };
+
+  const handleNo = () => {
+    setOpen(false);
+  };
+
+  const handleYes = () => {
+    fetch(`/items/delete/${toDelete}`, {
       method: "delete",
       headers: {
         Accept: "application/json",
@@ -43,6 +56,7 @@ function ItemsList() {
       },
     }).then((response) => {
       if (response.redirected) {
+        setOpen(false);
         console.log(response);
         window.location.href = response.url;
       } else {
@@ -60,7 +74,6 @@ function ItemsList() {
           <span>Add Item</span>
         </Link>
       </div>
-      <p className={"issue " + (deleteIssue && "active")}>{deleteIssue}</p>
       <div className={"table_container " + (rows.length && "active")}>
         <table className="table">
           <thead className="table_head">
@@ -76,7 +89,7 @@ function ItemsList() {
           <tbody className="table_body">
             {rows.map((row) => {
               return (
-                <Fragment>
+                <Fragment key={row["id"]}>
                   <tr className="rows">
                     <td className="primary_cell">{row["name"]}</td>
                     <td className="primary_cell">{row["quantity"]}</td>
@@ -96,7 +109,7 @@ function ItemsList() {
                       <Link onClick={() => handleUpdateClick(row)} to="update">
                         Edit
                       </Link>{" "}
-                      <Link onClick={() => handleDeleteClick(row)} to="">
+                      <Link onClick={() => handleDeleteClick(row["id"])} to="">
                         Delete
                       </Link>
                     </td>
@@ -114,6 +127,14 @@ function ItemsList() {
           Add now!
         </h1>
       </div>
+      {open && (
+        <Popup
+          handleNo={handleNo}
+          handleYes={handleYes}
+          issue={deleteIssue}
+          content="Are you sure you want to delete this item?"
+        />
+      )}
     </div>
   );
 }

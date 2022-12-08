@@ -18,7 +18,7 @@ const Popup = (props: PopupProps) => {
     } else if (res === "no") {
       props.handleNo();
     }
-  }, [res]);
+  }, [res, props]);
 
   return (
     <div className="overlay">

@@ -28,3 +28,5 @@ flask-server/__pycache__
 flask-server/database
 
 trash
+
+node_modules

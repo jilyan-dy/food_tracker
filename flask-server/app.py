@@ -280,7 +280,7 @@ def update_item(id):
 	item = Item.query.get_or_404(id)
 	if item.owner_id == current_user.id:
 		content = request.json
-	
+
 		valid_edit = Item.query.filter(
 			(Item.name == content['name']) & (Item.id != id)).first()
 
