@@ -281,7 +281,8 @@ def update_item(id):
 	if item.owner_id == current_user.id:
 		content = request.json
 
-		valid_edit = Item.query.filter(Item.name == content['name']).first()
+		valid_edit = Item.query.filter(
+			(Item.name == content['name']) & (Item.id != id)).first()
 
 		if valid_edit is None:
 			item.name = content['name']

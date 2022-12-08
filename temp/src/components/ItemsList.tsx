@@ -1,115 +1,142 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { Link } from 'react-router-dom';
-import { ReactSession }  from 'react-client-session';
+import React, { useState, useEffect, Fragment } from "react";
+import { Link } from "react-router-dom";
+import { ReactSession } from "react-client-session";
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-
-import './itemsList.scss';
-import {LOCATION_CHOICES, CATEGORY_CHOICES} from '../constants';
+import { LOCATION_CHOICES, CATEGORY_CHOICES } from "../constants";
+import "./itemsList.scss";
+import Popup from "./Popup";
 
 interface Item {
-	name: string, 
-	category: string,
-	quantity: number,
-	date_expire: Date,
-	location: string,
-	note: string
+  id: string;
+  name: string;
+  category: string;
+  quantity: number;
+  date_expire: Date;
+  location: string;
+  note: string;
 }
 
 function ItemsList() {
+  const [open, setOpen] = useState(false);
+  const [toDelete, setToDelete] = useState("-1");
+  const [rows, setRows] = useState([]);
+  const [deleteIssue, setDeleteIssue] = useState("");
 
-	const [rows, setRows] = useState([]);
-	const [deleteIssue, setDeleteIssue] = useState("");
+  const COLUMNS = ["Name", "Qty", "Exp Date", "Location", "Category"];
 
-	const COLUMNS = [
-		"Name",
-		"Qty",
-		"Exp Date",
-		"Location",
-		"Category"
-	]
+  useEffect(() => {
+    fetch("/items", {
+      method: "get",
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        setRows(responseJson);
+      });
+  }, []);
 
-	useEffect(() => {
-		fetch("/items", {
-			method: "get"
-		}).then((response) => response.json())
-		.then((responseJson) => {
-			setRows(responseJson)
-		})
-	}, []);
+  const handleUpdateClick = (item: Item) => {
+    ReactSession.set("itemToEdit", item);
+  };
 
-	const handleUpdateClick = (item: Item) => {
-		ReactSession.set("itemToEdit", item);
-	};
+  const handleDeleteClick = (item: string) => {
+    setOpen(!open);
+    setToDelete(item);
+  };
 
-	const handleDeleteClick = (item: Item) => {
-		fetch(`/items/delete/${item['id' as keyof typeof item]}`, {
-			method: "delete",
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-		}).then((response) => {
-			if (response.redirected) {
-				console.log(response)
-				window.location.href = response.url;
-			} else {
-				response.json().then((responseJson) => {
-					setDeleteIssue(responseJson)
-				})
-			}
-		})
-	}
+  const handleNo = () => {
+    setOpen(false);
+  };
 
+  const handleYes = () => {
+    fetch(`/items/delete/${toDelete}`, {
+      method: "delete",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      if (response.redirected) {
+        setOpen(false);
+        console.log(response);
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          setDeleteIssue(responseJson);
+        });
+      }
+    });
+  };
 
   return (
-	<div className="items">
-		<p>{deleteIssue}</p>
-		<TableContainer component={Paper}>
-			<Table className='table' key="items_table">
-				<TableHead key="table_head">
-					<TableRow key="top_row">
-						<TableCell>{ COLUMNS[0] }</TableCell>
-						<TableCell>{ COLUMNS[1] }</TableCell>
-						<TableCell>{ COLUMNS[2] }</TableCell>
-						<TableCell>{ COLUMNS[3] }</TableCell>
-						<TableCell>{ COLUMNS[4] }</TableCell>
-						<TableCell> Actions </TableCell>
-					</TableRow>
-				</TableHead>
-				<TableBody key="table_body">
-					{rows.map((row) => {
-						return(
-							<Fragment key={row['id']}>
-								<TableRow key={row['id']+"_row"}>
-									<TableCell key={row['id']+"_cell_name"}>{ row['name'] }</TableCell>
-									<TableCell key={row['id']+"_cell_quantity"}>{ row['quantity'] }</TableCell>
-									<TableCell key={row['id']+"_cell_expire"}>{ row['date_expire'] }</TableCell>
-									<TableCell key={row['id']+"_cell_location"}>{ LOCATION_CHOICES[row['location']] }</TableCell>
-									<TableCell key={row['id']+"_cell_category"}>{ CATEGORY_CHOICES[row['category']] }</TableCell>
-									<TableCell key={row['id']+"_cell_action"}>
-										<Link onClick={() => handleUpdateClick(row)} to="update">Edit</Link>
-										<br />
-										<Link onClick={() => handleDeleteClick(row)} to="">Delete</Link>
-									</TableCell>
-								</TableRow>
-								<TableRow key={row['id']+"_row_note"}>
-									<TableCell key={row['id']+"_cell_note"} colSpan={6}>{ row['note'] }</TableCell>
-								</TableRow>
-							</Fragment>
-						)
-					})}
-				</TableBody>
-			</Table>
-		</TableContainer>
-	</div>
-  )
+    <div className="items">
+      <div className="actions">
+        <Link to="add">
+          <span>Add Item</span>
+        </Link>
+      </div>
+      <div className={"table_container " + (rows.length && "active")}>
+        <table className="table">
+          <thead className="table_head">
+            <tr className="top_row">
+              <th>{COLUMNS[0]}</th>
+              <th>{COLUMNS[1]}</th>
+              <th>{COLUMNS[2]}</th>
+              <th>{COLUMNS[3]}</th>
+              <th>{COLUMNS[4]}</th>
+              {/* <th>Actions</th> */}
+            </tr>
+          </thead>
+          <tbody className="table_body">
+            {rows.map((row) => {
+              return (
+                <Fragment key={row["id"]}>
+                  <tr className="rows">
+                    <td className="primary_cell">{row["name"]}</td>
+                    <td className="primary_cell">{row["quantity"]}</td>
+                    <td className="primary_cell">{row["date_expire"]}</td>
+                    <td className="primary_cell">
+                      {LOCATION_CHOICES[row["location"]]}
+                    </td>
+                    <td className="primary_cell">
+                      {CATEGORY_CHOICES[row["category"]]}
+                    </td>
+                  </tr>
+                  <tr className="rows extra">
+                    <td colSpan={4} className="secondary_cell note">
+                      {row["note"]}
+                    </td>
+                    <td className="secondary_cell item_actions">
+                      <Link onClick={() => handleUpdateClick(row)} to="update">
+                        Edit
+                      </Link>{" "}
+                      <Link onClick={() => handleDeleteClick(row["id"])} to="">
+                        Delete
+                      </Link>
+                    </td>
+                  </tr>
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className={"empty " + (!rows.length && "active")}>
+        <h1>
+          No Items in List.
+          <br />
+          Add now!
+        </h1>
+      </div>
+      {open && (
+        <Popup
+          handleNo={handleNo}
+          handleYes={handleYes}
+          issue={deleteIssue}
+          content="Are you sure you want to delete this item?"
+        />
+      )}
+    </div>
+  );
 }
 
-export default ItemsList
+export default ItemsList;

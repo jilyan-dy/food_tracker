@@ -1,6 +1,6 @@
 @import "../global.scss";
 
-.items{
+.items {
   background-color: $tertiaryColor;
   width: 100%;
   height: 100vh;
@@ -10,5 +10,192 @@
   justify-content: center;
   align-items: center;
 
-  
+  .actions {
+    position: fixed;
+    top: 90px;
+
+    a {
+      position: fixed;
+      right: 60px;
+      text-decoration: none;
+      background: none;
+      color: inherit;
+      border: none;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+      outline: inherit;
+      text-align: center;
+
+      span::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: -1;
+        background-color: $oliveColor;
+        color: $whiteColor;
+
+        transition: transform 300ms ease-in-out;
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+
+      span:hover::before,
+      span:focus::before {
+        transform: scaleX(1);
+      }
+
+      span {
+        display: block;
+        padding: 5px 10px;
+        font-weight: 700;
+        font-size: 120%;
+        box-sizing: border-box;
+        border-radius: 5px;
+        color: $oliveColor;
+        position: relative;
+        border: 2px solid $primaryColor;
+        z-index: 1;
+        transition: color 300ms ease-in-out;
+        cursor: pointer;
+
+        @include mobile {
+          padding: 3px 5px;
+          font-size: 90%;
+          font-weight: 500;
+        }
+      }
+
+      span:hover,
+      span:focus {
+        color: $whiteColor;
+        border: 2px solid $oliveColor;
+      }
+
+      @include mobile {
+        width: 25%;
+      }
+    }
+  }
+
+  .empty {
+    display: none;
+
+    &.active {
+      display: block;
+      position: relative;
+      top: 15px;
+
+      h1 {
+        font-weight: 700;
+        font-size: 300%;
+        color: $darkGrayColor;
+        padding-bottom: 30px;
+        text-align: center;
+      }
+    }
+  }
+
+  .table_container {
+    display: none;
+
+    &.active {
+      display: block;
+      position: fixed;
+      top: 200px;
+      width: 90%;
+      max-height: 70%;
+      overflow-x: auto;
+      box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+        0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+      border-radius: 4px;
+
+      .table {
+        display: table;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        .table_head {
+          display: table-header-group;
+
+          .top_row {
+            display: table-row;
+            vertical-align: middle;
+
+            th {
+              display: table-cell;
+              border-bottom: 2px solid $transGrayColor;
+              padding: 16px;
+              position: sticky;
+              top: 0;
+              z-index: 2;
+              letter-spacing: 0.2px;
+              font-size: 130%;
+              font-weight: 800;
+              text-align: left;
+            }
+          }
+        }
+
+        .table_body {
+          display: table-row-group;
+
+          .rows {
+            display: table-row;
+            vertical-align: middle;
+
+            .primary_cell {
+              display: table-cell;
+              line-height: 1.3;
+              border-bottom: 0.5px solid $transGrayColor;
+              padding: 16px;
+              letter-spacing: 0.2px;
+              font-weight: 500;
+              font-size: 100%;
+            }
+
+            &.extra {
+              .secondary_cell {
+                display: table-cell;
+                line-height: 0.9;
+                border-bottom: 1px solid $transGrayColor;
+                color: $grayColor;
+                font-size: 90%;
+                font-weight: 400;
+
+                &.note {
+                  padding: 15px 30px 15px 60px;
+                }
+
+                &.item_actions {
+                  align-items: center;
+
+                  a {
+                    text-decoration: none;
+                    color: $oliveColor;
+                    background-color: $whiteColor;
+                    border: 1px solid $oliveColor;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    text-align: center;
+                    padding: 5px 10px;
+                    font-weight: 500;
+                    font-size: 100%;
+                    box-sizing: border-box;
+                    width: 75px;
+                    display: inline-block;
+                    margin: auto;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
