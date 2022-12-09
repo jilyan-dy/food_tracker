@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ReactSession } from "react-client-session";
 
+import { REACT_SESSION } from "../constants";
 import "./login.scss";
 
 function Login() {
@@ -31,7 +32,7 @@ function Login() {
         }),
       }).then((response) => {
         if (response.redirected) {
-          ReactSession.set("loggedIn", true);
+          ReactSession.set(REACT_SESSION.loggedIn, true);
           console.log(response);
           window.location.href = response.url;
         } else {

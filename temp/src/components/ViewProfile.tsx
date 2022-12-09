@@ -5,8 +5,9 @@ import { ReactSession } from "react-client-session";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 
-import "./viewProfile.scss";
+import { REACT_SESSION } from "../constants";
 import Popup from "./Popup";
+import "./viewProfile.scss";
 
 interface Values {
   username: String;
@@ -33,7 +34,7 @@ function ViewProfile() {
     fetch("/profile/delete").then((response) => {
       if (response.redirected) {
         setOpen(false);
-        ReactSession.set("loggedIn", false);
+        ReactSession.set(REACT_SESSION.loggedIn, false);
         window.location.href = response.url;
       } else {
         response.json().then((responseJson) => {
@@ -60,7 +61,7 @@ function ViewProfile() {
   }, []);
 
   const handleLinkClick = (action: string) => {
-    ReactSession.set("toEdit", action);
+    ReactSession.set(REACT_SESSION.editProfile, action);
   };
 
   return (

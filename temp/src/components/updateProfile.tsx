@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
 
+import { REACT_SESSION } from "../constants";
 import "./updateProfile.scss";
 
 YupPassword(Yup);
@@ -20,7 +21,7 @@ function EditProfile() {
       .then((response) => response.json())
       .then((responseJson) => {
         setEmail(responseJson["email"]);
-        setToEdit(ReactSession.get("toEdit"));
+        setToEdit(ReactSession.get(REACT_SESSION.editProfile));
       });
   }, []);
 

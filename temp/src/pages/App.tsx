@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ReactSession } from "react-client-session";
 
+import { REACT_SESSION } from "../constants";
 import "./app.scss";
 
 function App() {
@@ -12,7 +13,10 @@ function App() {
           Start Food <br /> Inventory!
         </h1>
         <div
-          className={"loggedout " + (!ReactSession.get("loggedIn") && "active")}
+          className={
+            "loggedout " +
+            (!ReactSession.get(REACT_SESSION.loggedIn) && "active")
+          }
         >
           <Link to="/login">
             <h3>Login</h3>
@@ -23,7 +27,9 @@ function App() {
           </Link>
         </div>
         <div
-          className={"loggedin " + (ReactSession.get("loggedIn") && "active")}
+          className={
+            "loggedin " + (ReactSession.get(REACT_SESSION.loggedIn) && "active")
+          }
         >
           <Link to="/items">
             <h3>View Items</h3>

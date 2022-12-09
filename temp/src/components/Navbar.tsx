@@ -5,6 +5,7 @@ import { Outlet, Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 
+import { REACT_SESSION } from "../constants";
 import "./navbar.scss";
 
 function Navbar() {
@@ -13,7 +14,7 @@ function Navbar() {
       method: "post",
     }).then((response) => {
       if (response.redirected) {
-        ReactSession.set("loggedIn", false);
+        ReactSession.set(REACT_SESSION.loggedIn, false);
         console.log(response);
         window.location.href = response.url;
       }
@@ -26,8 +27,8 @@ function Navbar() {
           <div className="left">
             <Link
               to={
-                (ReactSession.get("loggedIn") && "/items") ||
-                (!ReactSession.get("loggedIn") && "/")
+                (ReactSession.get(REACT_SESSION.loggedIn) && "/items") ||
+                (!ReactSession.get(REACT_SESSION.loggedIn) && "/")
               }
               className="logo"
             >
@@ -35,7 +36,9 @@ function Navbar() {
             </Link>
           </div>
           <div
-            className={"right " + (ReactSession.get("loggedIn") && "active")}
+            className={
+              "right " + (ReactSession.get(REACT_SESSION.loggedIn) && "active")
+            }
           >
             <Link to="/profile">
               <AccountCircleIcon className="icon" />

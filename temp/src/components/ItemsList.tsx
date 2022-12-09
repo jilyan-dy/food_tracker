@@ -2,7 +2,11 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { ReactSession } from "react-client-session";
 
-import { LOCATION_CHOICES, CATEGORY_CHOICES } from "../constants";
+import {
+  REACT_SESSION,
+  LOCATION_CHOICES,
+  CATEGORY_CHOICES,
+} from "../constants";
 import "./itemsList.scss";
 import Popup from "./Popup";
 
@@ -35,7 +39,7 @@ function ItemsList() {
   }, []);
 
   const handleUpdateClick = (item: Item) => {
-    ReactSession.set("itemToEdit", item);
+    ReactSession.set(REACT_SESSION.editItem, item);
   };
 
   const handleDeleteClick = (item: string) => {

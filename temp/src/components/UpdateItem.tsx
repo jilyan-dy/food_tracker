@@ -6,11 +6,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/src/stylesheets/datepicker.scss";
 import { Select, InputLabel, SelectChangeEvent, MenuItem } from "@mui/material";
 
-import { ITEM_FORMAT, LOCATION_CHOICES, CATEGORY_CHOICES } from "../constants";
+import {
+  REACT_SESSION,
+  ITEM_FORMAT,
+  LOCATION_CHOICES,
+  CATEGORY_CHOICES,
+} from "../constants";
 import "./updateItem.scss";
 
 function UpdateItem() {
-  const initialDetails = ReactSession.get("itemToEdit");
+  const initialDetails = ReactSession.get(REACT_SESSION.editItem);
   const [category, setCategory] = useState(Object.keys(CATEGORY_CHOICES)[0]);
   const [location, setLocation] = useState(Object.keys(LOCATION_CHOICES)[0]);
   const [dateExpire, setDateExpire] = useState(new Date());
@@ -219,7 +224,7 @@ function UpdateItem() {
 
             <div className="button">
               <button disabled={!formik.isValid}>
-                <span>Add Item</span>
+                <span>Save Changes</span>
               </button>
             </div>
           </div>
