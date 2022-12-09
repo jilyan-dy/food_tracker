@@ -1,28 +1,27 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-client
 
-temp/node_modules
-temp/.pnp
-temp/.pnp.js
+client/node_modules
+client/.pnp
+client/.pnp.js
 
 # testing
-temp/coverage
+client/coverage
 
 # production
-temp/build
+client/build
 
 # misc
-temp/.DS_Store
-temp/.env.local
-temp/.env.development.local
-temp/.env.test.local
-temp/.env.production.local
+client/.DS_Store
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
 
-temp/npm-debug.log*
-temp/yarn-debug.log*
-temp/yarn-error.log*
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
 
 flask-server/__pycache__
 flask-server/database
