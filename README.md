@@ -11,22 +11,22 @@ When you first run this app you'll be brought to the homepage where you could ei
 ![Homepage](https://github.com/jilyan-dy/food_tracker/blob/master/figs/homepage.png?raw=true)
 
 ### Register
-![Register](https://github.com/jilyan-dy/food_tracker/blob/master/figs/register.png?raw=true)
+![Register](https://github.com/jilyan-dy/food_tracker/blob/master/figs/register.PNG?raw=true)
 
 ### Login
-![Login](https://github.com/jilyan-dy/food_tracker/blob/master/figs/login.png?raw=true)
+![Login](https://github.com/jilyan-dy/food_tracker/blob/master/figs/login.PNG?raw=true)
 
 ### View Items
-![View Items](https://github.com/jilyan-dy/food_tracker/blob/master/figs/view_items.png?raw=true)
+![View Items](https://github.com/jilyan-dy/food_tracker/blob/master/figs/view_items.PNG?raw=true)
 
 ### Add Item
-![Add Item](https://github.com/jilyan-dy/food_tracker/blob/master/figs/add_item.png?raw=true)
+![Add Item](https://github.com/jilyan-dy/food_tracker/blob/master/figs/add_item.PNG?raw=true)
 
 ### Edit Item
-![Edit Item](https://github.com/jilyan-dy/food_tracker/blob/master/figs/edit_item.png?raw=true)
+![Edit Item](https://github.com/jilyan-dy/food_tracker/blob/master/figs/edit_item.PNG?raw=true)
 
 ### Delete Item
 ![Delete Item](https://github.com/jilyan-dy/food_tracker/blob/master/figs/delete_item.png?raw=true)
 
 ### Profile
-![Profile](https://github.com/jilyan-dy/food_tracker/blob/master/figs/profile.png?raw=true)
+![Profile](https://github.com/jilyan-dy/food_tracker/blob/master/figs/profile.PNG?raw=true)
