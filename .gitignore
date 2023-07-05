@@ -25,6 +25,7 @@ client/yarn-error.log*
 
 flask-server/__pycache__
 flask-server/database
+flask-server/migrations
 
 trash
 

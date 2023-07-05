@@ -30,15 +30,29 @@ def load_user(user_id):
 	return User.query.get(int(user_id))
 
 
+class Household(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(20), nullable=False, unique=True)
+	admin = db.Column(db.Integer, db.ForeignKey('user.id'))
+	members = db.relationship('User', backref='house')
+
+	def __repr__(self):
+		return '<Household %r>' % self.id
+
+	def __str__(self) -> str:
+		return self.name + " " + self.admin
+
+
 class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(20), nullable=False, unique=True)
 	email = db.Column(db.String(64), nullable=False, unique=True)
 	password_hash = db.Column(db.String(255), nullable=False)
 	date_added = db.Column(db.DateTime, default=datetime.utcnow)
-	admin = db.Column(db.Boolean, default=False)
+	admin = db.relationship('Household', backref='admin')
 	verfied = db.Column(db.Boolean, default=False)
 	active = db.Column(db.Boolean, default=True)
+	house = db.Column(db.Integer, db.ForeignKey('household.id'))
 	items = db.relationship('Item', backref='owner')
 
 	@property
