@@ -7,8 +7,6 @@ import "./index.scss";
 
 import Navbar from "./components/Navbar";
 import App from "./pages/App";
-// import Register from "./pages/Register";
-// import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Items from "./pages/Items";
 import ItemsList from "./components/ItemsList";
@@ -24,8 +22,6 @@ export default function Index() {
 			<Routes>
 				<Route path="/" element={<App />} />
 				<Route path="/" element={<Navbar />}>
-					{/* <Route path="register" element={<Register />} />
-					<Route path="login" element={<Login />} /> */}
 					<Route path="profile" element={<Profile />}>
 						<Route index element={<ViewProfile />} />
 						<Route path="update" element={<EditProfile />} />

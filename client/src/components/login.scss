@@ -2,8 +2,7 @@
 
 .login {
 	.form {
-		background-color: $beigeColor;
-		padding: 40px;
+		padding: 0px 40px;
 		margin: 10px;
 
 		.formIssue {
@@ -15,12 +14,12 @@
 				font-size: 100%;
 				color: $errorColor;
 				margin-bottom: 0px;
+				padding: 20px 0px;
 			}
 		}
 
 		.fields {
-			padding-top: 40px;
-			padding-bottom: 20px;
+			padding: 10px 0px;
 
 			.field {
 				width: 98%;
