@@ -1,5 +1,5 @@
 $grayColor: rgb(116, 116, 116);
-$oliveColor: rgb(136 161 144);
+$oliveColor: rgb(89, 117, 98);
 $whiteColor: rgb(255, 255, 255);
 $darkGrayColor: rgb(62, 62, 62);
 $beigeColor: rgb(255, 255, 245);
@@ -14,13 +14,13 @@ $publicationsColor: rgb(62, 62, 62);
 $width: 768px;
 
 @mixin mobile {
-	@media (max-width: #{$width}) {
-		@content;
-	}
+  @media (max-width: #{$width}) {
+    @content;
+  }
 }
 
 @mixin tablet {
-	@media (max-width: #{1170px}) {
-		@content;
-	}
+  @media (max-width: #{1170px}) {
+    @content;
+  }
 }

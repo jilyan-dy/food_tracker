@@ -4,6 +4,7 @@ import { Outlet, Link } from "react-router-dom";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
+import HomeIcon from "@mui/icons-material/Home";
 
 import { REACT_SESSION } from "../constants";
 import "./navbar.scss";
@@ -40,6 +41,9 @@ function Navbar() {
               "right " + (ReactSession.get(REACT_SESSION.loggedIn) && "active")
             }
           >
+            <Link to="/house">
+              <HomeIcon className="icon" />
+            </Link>
             <Link to="/profile">
               <AccountCircleIcon className="icon" />
             </Link>

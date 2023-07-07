@@ -33,7 +33,7 @@ def load_user(user_id):
 class Household(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(20), nullable=False, unique=True)
-	admin = db.Column(db.Integer, db.ForeignKey('user.id'))
+	adminID = db.Column(db.Integer, db.ForeignKey('user.id'))
 	members = db.relationship('User', backref='house')
 
 	def __repr__(self):
@@ -52,7 +52,7 @@ class User(db.Model, UserMixin):
 	admin = db.relationship('Household', backref='admin')
 	verfied = db.Column(db.Boolean, default=False)
 	active = db.Column(db.Boolean, default=True)
-	house = db.Column(db.Integer, db.ForeignKey('household.id'))
+	houseId = db.Column(db.Integer, db.ForeignKey('household.id'))
 	items = db.relationship('Item', backref='owner')
 
 	@property
@@ -70,12 +70,20 @@ class User(db.Model, UserMixin):
 		return '<User %r>' % self.id
 
 	def __str__(self) -> str:
-		return self.username + " " + self.email + " " + self.admin
+		return self.username + " " + self.email
+
+	def to_json(self):
+		return {
+			"id": self.id,
+			"username": self.username,
+			"admin": self.admin,
+			"verified": self.verfied,
+		}
 
 
 class Item(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	userId = db.Column(db.Integer, db.ForeignKey('user.id'))
 	name = db.Column(db.String(64), nullable=False)
 	category = db.Column(db.String(64), nullable=False)
 	quantity = db.Column(db.Integer, nullable=False)
@@ -133,6 +141,43 @@ def login():
 def logout():
 	logout_user()
 	return redirect('/')
+
+
+@app.route('/house', methods=['GET', 'POST'])
+@login_required
+def add_house():
+	if request.method == 'GET':
+		house_id = current_user.house_id
+		house = Household.query.filter(Household.id == house_id)
+		members = User.query.filter(User.houseId == house_id)
+		members_json = [member.to_json() for member in members]
+		dumps = [{"house_name": house.name, "members": members_json}]
+		json_items = json.dumps(dumps)
+		return json_items
+
+	else:
+		content = request.json
+		valid_info = Household.query.filter(Household.name == content['name']).first()
+
+		if valid_info is None:
+			house = Household(
+				name=content['name'],
+				adminId=current_user.id
+			)
+
+			try:
+				db.session.add(house)
+				db.session.commit()
+
+				print("Successfully Created House")
+				# join_house()
+				return redirect('/house')
+
+			except Exception as e:
+				return {"issue": "There was an issue creating this house"}
+
+		else:
+			return {"issue": "House already exists."}
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -228,7 +273,7 @@ def delete_user():
 @login_required
 def add_item():
 	if request.method == 'GET':
-		items = Item.query.filter_by(owner_id=current_user.id).order_by(Item.date_expire).all()
+		items = Item.query.filter_by(userId=current_user.id).order_by(Item.date_expire).all()
 		json_items = json.dumps([item.to_json() for item in items])
 		return json_items
 
@@ -244,7 +289,7 @@ def add_item():
 				date_expire=datetime.strptime(content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date(),
 				location=content['location'],
 				note=content['note'],
-				owner_id=current_user.id
+				userId=current_user.id
 			)
 
 			try:
@@ -272,7 +317,7 @@ def add_item():
 @login_required
 def delete_item(id):
 	item = Item.query.get_or_404(id)
-	if item.owner_id == current_user.id:
+	if item.userId == current_user.id:
 
 		try:
 			db.session.delete(item)
@@ -291,7 +336,7 @@ def delete_item(id):
 @login_required
 def update_item(id):
 	item = Item.query.get_or_404(id)
-	if item.owner_id == current_user.id:
+	if item.userId == current_user.id:
 		content = request.json
 
 		valid_edit = Item.query.filter(
@@ -326,7 +371,7 @@ def update_item(id):
 # @login_required
 # def update_item(id):
 # 	item = Item.query.get_or_404(id)
-# 	if item.owner_id == current_user.id:
+# 	if item.userId == current_user.id:
 # 		form = ItemForm()
 
 # 		if form.validate_on_submit():
