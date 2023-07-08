@@ -3,7 +3,11 @@
 This project was created to help track a household's food inventory to prevent over buying and spoiling of foods.
 The project was created using Flask, ReactJS, and MySQL.
 
-<!-- # To Run
+<!--
+# if package dependencies causing error
+npm install --legacy-peer-deps
+
+# To Run
 -> export NODE_OPTIONS=--openssl-legacy-provider
 -> in flask-server run "python app.py"
 -> in client run "npm start"
