@@ -31,11 +31,15 @@ function ItemsList() {
   useEffect(() => {
     fetch("/items", {
       method: "get",
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        setRows(responseJson);
-      });
+    }).then((response) => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          setRows(responseJson);
+        });
+      }
+    });
   }, []);
 
   const handleUpdateClick = (item: Item) => {

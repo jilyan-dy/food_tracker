@@ -48,16 +48,20 @@ function ViewProfile() {
   useEffect(() => {
     fetch("/profile", {
       method: "get",
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        setValues({
-          username: responseJson["username"],
-          email: responseJson["email"],
-          date_added: responseJson["date_added"],
-          admin: responseJson["admin"],
+    }).then((response) => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          setValues({
+            username: responseJson["username"],
+            email: responseJson["email"],
+            date_added: responseJson["date_added"],
+            admin: responseJson["admin"],
+          });
         });
-      });
+      }
+    });
   }, []);
 
   const handleLinkClick = (action: string) => {

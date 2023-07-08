@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ReactSession } from "react-client-session";
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -6,7 +7,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/src/stylesheets/datepicker.scss";
 import { Select, InputLabel, SelectChangeEvent, MenuItem } from "@mui/material";
 
-import { ITEM_FORMAT, LOCATION_CHOICES, CATEGORY_CHOICES } from "../constants";
+import {
+  REACT_SESSION,
+  ITEM_FORMAT,
+  LOCATION_CHOICES,
+  CATEGORY_CHOICES,
+} from "../constants";
 import "./addItem.scss";
 
 function AddItem() {
@@ -79,6 +85,12 @@ function AddItem() {
       setDateIssue("");
     }
   };
+
+  useEffect(() => {
+    if (!ReactSession.get(REACT_SESSION.loggedIn)) {
+      window.location.href = "http://localhost:3000/login?next=%2Fitems";
+    }
+  }, []);
 
   return (
     <div className="items">

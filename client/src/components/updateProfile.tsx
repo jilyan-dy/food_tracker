@@ -17,12 +17,16 @@ function EditProfile() {
   useEffect(() => {
     fetch("/profile/update", {
       method: "get",
-    })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        setEmail(responseJson["email"]);
-        setToEdit(ReactSession.get(REACT_SESSION.editProfile));
-      });
+    }).then((response) => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          setEmail(responseJson["email"]);
+          setToEdit(ReactSession.get(REACT_SESSION.editProfile));
+        });
+      }
+    });
   }, []);
 
   const formik_email = useFormik({
