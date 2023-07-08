@@ -1,0 +1,404 @@
+@import "../global.scss";
+
+.household {
+  background-color: $whiteColor;
+  width: 100%;
+  height: auto;
+  top: 100px;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .has-house {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h1 {
+      font-weight: 700;
+      font-size: 300%;
+      color: $darkGrayColor;
+      padding-bottom: 30px;
+      position: relative;
+      top: 15px;
+
+      @include mobile {
+        top: -15px;
+      }
+    }
+
+    .issue {
+      display: none;
+
+      &.active {
+        display: block;
+        font-weight: 200;
+        font-size: 100%;
+        color: $errorColor;
+        margin-bottom: 0px;
+      }
+    }
+
+    .house-actions {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+      .action {
+        text-decoration: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px;
+        color: $grayColor;
+
+        .icon {
+          font-size: 200%;
+
+          @include mobile {
+            font-size: 180%;
+          }
+        }
+
+        label {
+          font-size: 80%;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .details {
+      width: 90%;
+      height: 30%;
+      display: flex;
+      justify-content: center;
+      padding: 14px 0px;
+
+      .label {
+        width: 20%;
+        height: 95%;
+        position: relative;
+        top: 0px;
+        font-weight: 500;
+        font-size: 150%;
+        color: $grayColor;
+        text-align: right;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+
+        label {
+          padding: 10px 0px;
+        }
+
+        @include mobile {
+          width: 45%;
+          padding: 8px;
+          font-weight: 650;
+          font-size: 130%;
+        }
+      }
+
+      .value {
+        width: 55%;
+        height: 95%;
+        position: relative;
+        top: 0px;
+        font-weight: 300;
+        font-size: 150%;
+        color: $grayColor;
+        text-align: left;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+
+        span {
+          padding: 10px 0px;
+        }
+
+        @include mobile {
+          width: 55%;
+          padding: 8px;
+          font-weight: 450;
+          font-size: 130%;
+        }
+
+        .table_container {
+          display: block;
+          position: relative;
+          width: 90%;
+          max-height: 70%;
+          overflow-x: auto;
+          box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+            0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+          border-radius: 4px;
+          padding-top: 10px;
+
+          .table {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+
+            .table_head {
+              display: table-header-group;
+
+              .top_row {
+                display: table-row;
+                vertical-align: middle;
+
+                th {
+                  display: table-cell;
+                  border-bottom: 2px solid $transGrayColor;
+                  padding: 5px 10px;
+                  font-size: 90%;
+                  font-weight: 500;
+                  text-align: left;
+
+                  &.bool {
+                    text-align: center;
+                    width: 10%;
+                  }
+                }
+              }
+            }
+
+            .table_body {
+              display: table-row-group;
+
+              .rows {
+                display: table-row;
+                vertical-align: middle;
+
+                .primary {
+                  display: table-cell;
+                  line-height: 1.3;
+                  border-bottom: 0.5px solid $transGrayColor;
+                  font-weight: 300;
+                  font-size: 80%;
+                  padding: 7px 10px;
+
+                  &.bool {
+                    text-align: center;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      @include mobile {
+        height: 40%;
+        padding: 10px;
+        position: relative;
+        top: -20px;
+      }
+    }
+  }
+
+  .popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: $transGrayColor;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+
+    .content {
+      position: absolute;
+      width: 40%;
+      height: auto;
+      background-color: $whiteColor;
+      border: 1px solid $oliveColor;
+      border-radius: 10px;
+      margin: 20px auto;
+      padding: 20px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      left: 50%;
+      top: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+
+      .close {
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 200%;
+        font-weight: 700;
+        color: $oliveColor;
+        position: absolute;
+        right: 30px;
+        top: 15px;
+        z-index: 1;
+      }
+
+      .add-house-actions {
+        width: 55%;
+        padding: 10px 5px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        border: none;
+
+        a {
+          text-decoration: none;
+          cursor: pointer;
+
+          .action {
+            color: black;
+            font-weight: 700;
+            font-size: 200%;
+
+            &.active {
+              border-bottom: 3px solid black;
+            }
+          }
+        }
+      }
+
+      .forms {
+        width: 100%;
+        .house {
+          .form {
+            .formIssue {
+              display: none;
+
+              &.active {
+                display: block;
+                font-weight: 200;
+                font-size: 100%;
+                color: $errorColor;
+                margin: 0px;
+                padding-bottom: 15px;
+                text-align: center;
+              }
+            }
+
+            .fields {
+              padding-bottom: 20px;
+
+              .issue {
+                display: none;
+
+                &.active {
+                  display: block;
+                  font-weight: 200;
+                  font-size: 90%;
+                  color: $errorColor;
+                  padding-top: 4px;
+                  padding-bottom: 3px;
+                  padding-left: 5px;
+                  margin: 0px;
+                  position: inherit;
+                  text-align: center;
+                }
+              }
+
+              .field {
+                width: 98%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                // align-items: center;
+
+                .label {
+                  font-weight: 300;
+                  font-size: 110%;
+                  padding-top: 15px;
+
+                  &.dropdown {
+                    padding-top: 8px;
+                  }
+                }
+
+                input {
+                  font-size: 100%;
+                  margin: 8px 3px 15px 3px;
+
+                  &.text {
+                    width: 70%;
+                    height: 30px;
+                  }
+                }
+              }
+
+              .button {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 15px;
+
+                button {
+                  background: none;
+                  color: inherit;
+                  border: none;
+                  padding: 0;
+                  font: inherit;
+                  cursor: pointer;
+                  outline: inherit;
+
+                  span::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    z-index: -1;
+                    background-color: $oliveColor;
+                    color: $whiteColor;
+
+                    transition: transform 300ms ease-in-out;
+                    transform: scaleX(0);
+                    transform-origin: left;
+                  }
+
+                  span:hover::before,
+                  span:focus::before {
+                    transform: scaleX(1);
+                  }
+
+                  span {
+                    display: block;
+                    padding: 5px 10px;
+                    font-weight: 700;
+                    font-size: 90%;
+                    box-sizing: border-box;
+                    color: $oliveColor;
+                    position: relative;
+                    border: 2px solid $primaryColor;
+                    z-index: 1;
+                    transition: color 300ms ease-in-out;
+                    cursor: pointer;
+                  }
+
+                  span:hover,
+                  span:focus {
+                    color: $whiteColor;
+                    border: 2px solid $oliveColor;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
