@@ -87,14 +87,18 @@ function UpdateItem() {
   };
 
   useEffect(() => {
-    formik.setValues({
-      name: initialDetails["name"],
-      quantity: initialDetails["quantity"],
-      note: initialDetails["note"],
-    });
-    setCategory(initialDetails["category"]);
-    setLocation(initialDetails["location"]);
-    setDateExpire(new Date(initialDetails["date_expire"]));
+    if (ReactSession.get(REACT_SESSION.loggedIn)) {
+      formik.setValues({
+        name: initialDetails["name"],
+        quantity: initialDetails["quantity"],
+        note: initialDetails["note"],
+      });
+      setCategory(initialDetails["category"]);
+      setLocation(initialDetails["location"]);
+      setDateExpire(new Date(initialDetails["date_expire"]));
+    } else {
+      window.location.href = "http://localhost:3000/login?next=%2Fitems";
+    }
   }, []);
 
   return (
