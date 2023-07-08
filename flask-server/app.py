@@ -33,14 +33,13 @@ def load_user(user_id):
 class Household(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(20), nullable=False, unique=True)
-	adminID = db.Column(db.Integer, db.ForeignKey('user.id'))
 	members = db.relationship('User', backref='house')
 
 	def __repr__(self):
 		return '<Household %r>' % self.id
 
 	def __str__(self) -> str:
-		return self.name + " " + self.admin
+		return self.name
 
 
 class User(db.Model, UserMixin):
@@ -49,8 +48,8 @@ class User(db.Model, UserMixin):
 	email = db.Column(db.String(64), nullable=False, unique=True)
 	password_hash = db.Column(db.String(255), nullable=False)
 	date_added = db.Column(db.DateTime, default=datetime.utcnow)
-	admin = db.relationship('Household', backref='admin')
-	verfied = db.Column(db.Boolean, default=False)
+	admin = db.Column(db.Boolean, default=False, nullable=False)
+	verified = db.Column(db.Boolean, default=False, nullable=False)
 	active = db.Column(db.Boolean, default=True)
 	houseId = db.Column(db.Integer, db.ForeignKey('household.id'))
 	items = db.relationship('Item', backref='owner')
@@ -77,7 +76,7 @@ class User(db.Model, UserMixin):
 			"id": self.id,
 			"username": self.username,
 			"admin": self.admin,
-			"verified": self.verfied,
+			"verified": self.verified,
 		}
 
 
@@ -143,26 +142,36 @@ def logout():
 	return redirect('/')
 
 
-@app.route('/house', methods=['GET', 'POST'])
+@app.route('/house')
+@login_required
+def view_house():
+	if current_user.houseId is None:
+		houses = Household.query.all()
+		# json_items = json.dumps([house.to_json() for house in houses])
+		json_items = {}
+		for house in houses:
+			json_items[house.id] = house.name
+		return json_items, 209
+
+	house_id = current_user.houseId
+	house = Household.query.filter(Household.id == house_id).first()
+	members = User.query.filter(User.houseId == house_id).all()
+	members_json = [member.to_json() for member in members]
+	dumps = {"house_name": house.name, "admin":current_user.admin, "members": members_json}
+	json_items = json.dumps(dumps)
+	return json_items
+
+
+@app.route('/house/add', methods=['GET', 'POST'])
 @login_required
 def add_house():
-	if request.method == 'GET':
-		house_id = current_user.house_id
-		house = Household.query.filter(Household.id == house_id)
-		members = User.query.filter(User.houseId == house_id)
-		members_json = [member.to_json() for member in members]
-		dumps = [{"house_name": house.name, "members": members_json}]
-		json_items = json.dumps(dumps)
-		return json_items
-
-	else:
+	if request.method != 'GET':
 		content = request.json
 		valid_info = Household.query.filter(Household.name == content['name']).first()
 
 		if valid_info is None:
 			house = Household(
-				name=content['name'],
-				adminId=current_user.id
+				name=content['name']
 			)
 
 			try:
@@ -170,17 +179,179 @@ def add_house():
 				db.session.commit()
 
 				print("Successfully Created House")
-				# join_house()
+
+				house = Household.query.filter(Household.name == content['name']).first()
+				join_house(house.id)
+
 				return redirect('/house')
 
 			except Exception as e:
 				return {"issue": "There was an issue creating this house"}
 
 		else:
+			join_house(valid_info.id)
 			return {"issue": "House already exists."}
 
 
+@app.route('/house/join', methods=['GET', 'POST'])
+@login_required
+def join_house(houseId=-1):
+	if houseId == -1:
+		content = request.json
+		houseId = content['house']
+
+	house = Household.query.filter(Household.id == houseId).first()
+
+	if house is None:
+		return {"issue": "House doesn't exist"}
+
+	user = User.query.get_or_404(current_user.id)
+	first = User.query.filter(User.houseId == houseId).first()
+
+	if user.houseId == houseId:
+		return {"issue": "Current house"}
+
+	if user.houseId is not None:
+		user.verified = False
+
+	if first is None:
+		user.admin = True
+		user.verified = True
+
+	user.houseId = houseId
+
+	try:
+		db.session.commit()
+		print("Added you to " + house.name)
+		return redirect('/house')
+
+	except Exception as e:
+		return {"issue": "There was an issue with updating your profile."}
+
+
+@app.route('/house/verify', methods=['GET', 'POST'])
+@login_required
+def verify_members():
+	if current_user.admin:
+		content = request.json
+		member = User.query.get_or_404(content['memberId'])
+
+		if member.houseId == current_user.houseId and not member.verified:
+			member.verified = True
+
+			try:
+				db.session.commit()
+				print("Verification Successful")
+				return redirect('/house')
+
+			except Exception as e:
+				return {"issue": "There was an issue with verifying this member."}
+
+	else:
+		return {"issue": "You do not have access to verify other members."}
+
+
+@app.route('/house/leave', methods=['GET', 'POST'])
+@login_required
+def leave_house():
+	if current_user.houseId is not None:
+		user = User.query.get_or_404(current_user.id)
+		user.houseId = None
+		user.verified = False
+		user.admin = False
+
+		try:
+			db.session.commit()
+			print("You have left your previous house.")
+			return redirect('/house')
+
+		except Exception as e:
+			return {"issue": "There was an issue with leaving the house."}
+
+	else:
+		return {"issue": "You do not belong to a house. Please join a house first."}
+
+
+@app.route('/house/delete')
+@login_required
+def delete_house():
+	house = Household.query.get_or_404(current_user.houseId)
+
+	if current_user.admin:
+		users = User.query.filter(User.houseId == current_user.houseId).all()
+		if len(users) == 1:
+			try:
+				db.session.delete(house)
+				db.session.commit()
+				print("Delete Successful")
+				return redirect('/house')
+
+			except Exception as e:
+				return {"issue": "There was an issue with deleting the house."}
+
+		else:
+			return {"issue": "The house still has other members."}
+
+	else:
+		return {"issue": "You do not have delete access for this house."}
+
+
+@app.route('/admin/add', methods=['GET', 'POST'])
+@login_required
+def add_admin(content=None):
+	if current_user.admin:
+		if content is None:
+			content = request.json
+		member = User.query.get_or_404(content['memberId'])
+
+		if member.houseId == current_user.houseId and member.verified:
+			member.admin = True
+
+			try:
+				db.session.commit()
+				print("Admin Added Successfully")
+				return redirect('/house')
+
+			except Exception as e:
+				return {"issue": "There was an issue with adding this member as admin."}
+
+	else:
+		return {"issue": "You do not have admin access."}
+
+
+@app.route('/admin/remove', methods=['GET', 'POST'])
+@login_required
+def remove_admin(content=None):
+	if current_user.admin:
+		if content is None:
+			content = request.json
+		member = User.query.get_or_404(content['memberId'])
+
+		if member.houseId == current_user.houseId and member.admin:
+			member.admin = False
+
+			try:
+				db.session.commit()
+				print("Admin Removed Successfully")
+				return redirect('/house')
+
+			except Exception as e:
+				return {"issue": "There was an issue with removing this member as admin."}
+
+	else:
+		return {"issue": "You do not have admin access."}
+
+
+@app.route('/admin/change', methods=['GET', 'POST'])
+@login_required
+def change_admin():
+	if current_user.admin:
+		add_admin(request.json)
+		remove_admin(request.json)
+
+
 @app.route('/register', methods=['GET', 'POST'])
+@login_required
 def add_user():
 	user = None
 	content = request.json
@@ -266,7 +437,7 @@ def delete_user():
 		return redirect('/')
 
 	except Exception as e:
-		return {"issue": "There was an issue with delete the user."}
+		return {"issue": "There was an issue with deleting the user."}
 
 
 @app.route('/items', methods=['GET', 'POST'])
