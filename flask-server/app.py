@@ -384,11 +384,15 @@ def add_user():
 @app.route('/profile')
 @login_required
 def view_user():
+	house = Household.query.filter(Household.id == current_user.houseId).first()
+
 	return {
 		"username": current_user.username,
 		"email": current_user.email,
 		"date_added": current_user.date_added.strftime("%Y-%m-%d"),
-		"admin": current_user.admin
+		"admin": current_user.admin,
+		"verified": current_user.verified,
+		"house": house.name if house is not None else "No House Yet"
 	}
 
 

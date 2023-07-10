@@ -14,6 +14,8 @@ interface Values {
   email: String;
   date_added: String;
   admin: boolean;
+  verified: boolean;
+  house: String;
 }
 
 function ViewProfile() {
@@ -24,6 +26,8 @@ function ViewProfile() {
     email: "",
     date_added: "",
     admin: false,
+    verified: false,
+    house: "",
   });
 
   const handleNo = () => {
@@ -58,6 +62,8 @@ function ViewProfile() {
             email: responseJson["email"],
             date_added: responseJson["date_added"],
             admin: responseJson["admin"],
+            verified: responseJson["verified"],
+            house: responseJson["house"],
           });
         });
       }
@@ -69,29 +75,7 @@ function ViewProfile() {
   };
 
   return (
-    <>
-      <div className="details">
-        <div className="label">
-          <label>Username : </label>
-          <br />
-          <label>Email : </label>
-          <br />
-          <label>Date Registered : </label>
-          <br />
-          <label>Admin Access : </label>
-        </div>
-        <div className="value">
-          <span>{values["username"]}</span>
-          <br />
-          <span>{values["email"]}</span>
-          <br />
-          <span>{values["date_added"]}</span>
-          <br />
-          <span>
-            {values["admin"] ? <VerifiedIcon /> : <DoNotDisturbIcon />}
-          </span>
-        </div>
-      </div>
+    <div className="outer">
       <div className="actions">
         <Link onClick={() => handleLinkClick("email")} to="update">
           <span>Change Email</span>
@@ -103,6 +87,31 @@ function ViewProfile() {
           <span>Delete Account</span>
         </Link>
       </div>
+      <span className="line"></span>
+      <div className="details">
+        <div className="header">
+          <span className="name">{values["username"]}</span>
+          {values["verified"] ? <VerifiedIcon /> : <DoNotDisturbIcon />}
+        </div>
+        <div className="detail">
+          <label className="label">Email</label>
+          <span className="value">{values["email"]}</span>
+        </div>
+        <div className="detail">
+          <label className="label">House</label>
+          <span className="value">{values["house"]}</span>
+        </div>
+        <div className="detail">
+          <label className="label">Admin</label>
+          <span className="value">
+            {values["admin"] ? <VerifiedIcon /> : <DoNotDisturbIcon />}
+          </span>
+        </div>
+        <div className="detail">
+          <label className="label">Since</label>
+          <span className="value">{values["date_added"]}</span>
+        </div>
+      </div>
       {open && (
         <Popup
           handleNo={handleNo}
@@ -111,7 +120,7 @@ function ViewProfile() {
           content="Are you sure you want to delete your account?"
         />
       )}
-    </>
+    </div>
   );
 }
 

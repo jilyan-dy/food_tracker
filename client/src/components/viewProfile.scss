@@ -1,158 +1,160 @@
 @import "../global.scss";
 
-h1 {
-  font-weight: 700;
-  font-size: 300%;
-  color: $darkGrayColor;
-  padding-bottom: 30px;
-  position: relative;
-  top: 15px;
-
-  @include mobile {
-    top: -15px;
-  }
-}
-
-.details {
-  width: 90%;
-  height: 30%;
+.outer {
+  width: 98%;
   display: flex;
-  justify-content: center;
-  padding: 40px 0px;
-
-  .label {
-    width: 45%;
-    height: 95%;
-    position: relative;
-    top: 0px;
-    font-weight: 500;
-    font-size: 150%;
-    color: $grayColor;
-    text-align: right;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-
-    label {
-      padding: 10px 0px;
-    }
-
-    @include mobile {
-      width: 45%;
-      padding: 8px;
-      font-weight: 650;
-      font-size: 130%;
-    }
-  }
-
-  .value {
-    width: 55%;
-    height: 95%;
-    position: relative;
-    top: 0px;
-    font-weight: 300;
-    font-size: 150%;
-    color: $grayColor;
-    text-align: left;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-
-    span {
-      padding: 10px 0px;
-    }
-
-    @include mobile {
-      width: 55%;
-      padding: 8px;
-      font-weight: 450;
-      font-size: 130%;
-    }
-  }
-
-  @include mobile {
-    height: 40%;
-    padding: 10px;
-    position: relative;
-    top: -20px;
-  }
-}
-
-.actions {
-  width: 90%;
-  padding: 30px 0px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  flex-direction: row-reverse;
   align-items: center;
+  justify-content: center;
 
-  a {
-    text-decoration: none;
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    cursor: pointer;
-    outline: inherit;
-    text-align: center;
+  .actions {
+    width: 25%;
+    padding: 30px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
 
-    span::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      z-index: -1;
-      background-color: $oliveColor;
-      color: $whiteColor;
-
-      transition: transform 300ms ease-in-out;
-      transform: scaleX(0);
-      transform-origin: left;
-    }
-
-    span:hover::before,
-    span:focus::before {
-      transform: scaleX(1);
-    }
-
-    span {
-      display: block;
-      padding: 5px 10px;
-      font-weight: 700;
-      font-size: 120%;
-      box-sizing: border-box;
-      border-radius: 5px;
-      color: $oliveColor;
-      position: relative;
-      border: 2px solid $grayColor;
-      z-index: 1;
-      transition: color 300ms ease-in-out;
+    a {
+      text-decoration: none;
+      width: 98%;
       cursor: pointer;
+      text-align: center;
+      margin: 5px 0px;
+
+      span::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: -1;
+        background-color: $oliveColor;
+        color: $whiteColor;
+
+        transition: transform 300ms ease-in-out;
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+
+      span:hover::before,
+      span:focus::before {
+        transform: scaleX(1);
+      }
+
+      span {
+        display: block;
+        padding: 5px 10px;
+        font-weight: 700;
+        font-size: 110%;
+        box-sizing: border-box;
+        border-radius: 5px;
+        color: $oliveColor;
+        position: relative;
+        border: 2px solid $grayColor;
+        z-index: 1;
+        transition: color 300ms ease-in-out;
+        cursor: pointer;
+
+        @include mobile {
+          padding: 3px 5px;
+          font-size: 90%;
+          font-weight: 500;
+        }
+      }
+
+      span:hover,
+      span:focus {
+        color: $whiteColor;
+        border: 2px solid $oliveColor;
+      }
 
       @include mobile {
-        padding: 3px 5px;
-        font-size: 90%;
-        font-weight: 500;
+        width: 25%;
       }
     }
 
-    span:hover,
-    span:focus {
-      color: $whiteColor;
-      border: 2px solid $oliveColor;
-    }
-
     @include mobile {
-      width: 25%;
+      justify-content: space-around;
     }
   }
 
-  @include mobile {
-    justify-content: space-around;
+  .line {
+    background-color: white;
+    width: 3px;
+    height: 75%;
+    margin: 0px 10px;
+  }
+
+  .details {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    .header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .name {
+        font-size: 250%;
+        font-weight: 600;
+        padding: 15px 10px;
+      }
+    }
+
+    .detail {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 10px 0px;
+
+      .label {
+        width: 20%;
+        height: 95%;
+        font-weight: 600;
+        font-size: 150%;
+        color: $grayColor;
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+
+        @include mobile {
+          width: 45%;
+          padding: 8px;
+          font-weight: 650;
+          font-size: 130%;
+        }
+      }
+
+      .value {
+        width: 75%;
+        height: 95%;
+        font-weight: 300;
+        font-size: 150%;
+        color: $grayColor;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+
+        @include mobile {
+          width: 55%;
+          padding: 8px;
+          font-weight: 450;
+          font-size: 130%;
+        }
+      }
+
+      @include mobile {
+        height: 40%;
+        padding: 10px;
+        position: relative;
+        top: -20px;
+      }
+    }
   }
 }
