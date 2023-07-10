@@ -1,99 +1,99 @@
 @import "../global.scss";
 
 .home {
-	background-color: rgb(136 161 144);
-	width: 100%;
-	height: 100vh;
+  background-color: rgb(136 161 144);
+  width: 100%;
+  height: 100vh;
 
-	.wrapper {
-		width: 100%;
-		height: 100vh;
-		position: fixed;
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
+  .wrapper {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 
-		.left {
-			width: 50%;
-			padding: 5px;
-			h1 {
-				font-weight: 800;
-				font-size: 500%;
-				margin-top: 100px;
-				margin-bottom: 50px;
-				padding: 0;
-				text-align: center;
-				color: rgb(255 255 255);
+    .left {
+      width: 50%;
+      padding: 5px;
+      h1 {
+        font-weight: 800;
+        font-size: 500%;
+        margin-top: 100px;
+        margin-bottom: 50px;
+        padding: 0;
+        text-align: center;
+        color: rgb(255 255 255);
 
-				@include mobile {
-					font-size: 300%;
-				}
-			}
+        @include mobile {
+          font-size: 300%;
+        }
+      }
 
-			h2 {
-				font-weight: 500;
-				font-size: 300%;
-				margin-top: 0px;
-				margin-bottom: 50px;
-				text-align: center;
-				color: rgb(221 221 221);
+      h2 {
+        font-weight: 500;
+        font-size: 300%;
+        margin-top: 0px;
+        margin-bottom: 50px;
+        text-align: center;
+        color: rgb(221 221 221);
 
-				@include mobile {
-					font-size: 300%;
-				}
-			}
-		}
+        @include mobile {
+          font-size: 300%;
+        }
+      }
+    }
 
-		.right {
-			width: 40%;
-			max-width: 500px;
-			background-color: white;
-			border-radius: 10px;
-			margin: 5px 10px;
-			padding: 5px;
+    .right {
+      width: 40%;
+      max-width: 500px;
+      background-color: white;
+      border-radius: 10px;
+      margin: 5px 10px;
+      padding: 5px;
 
-			.loggedout {
-				display: none;
+      .loggedout {
+        display: none;
 
-				&.active {
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-					align-items: center;
-					margin: 0px 10px;
+        &.active {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          margin: 0px 10px;
 
-					@include mobile {
-						flex-direction: column;
-					}
+          @include mobile {
+            flex-direction: column;
+          }
 
-					.login-actions {
-						width: 55%;
-						padding: 10px 5px;
-						margin-bottom: 20px;
-						display: flex;
-						flex-direction: row;
-						justify-content: space-around;
-						a {
-							text-decoration: none;
-							cursor: pointer;
-							.action {
-								color: black;
-								font-weight: 700;
-								font-size: 200%;
+          .login-actions {
+            width: 55%;
+            padding: 40px 5px 10px 5px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            a {
+              text-decoration: none;
+              cursor: pointer;
+              .action {
+                color: black;
+                font-weight: 700;
+                font-size: 200%;
 
-								&.active {
-									border-bottom: 3px solid black;
-								}
-							}
-						}
-					}
+                &.active {
+                  border-bottom: 3px solid black;
+                }
+              }
+            }
+          }
 
-					.forms {
-						display: block;
-					}
-				}
-			}
-		}
-	}
+          .forms {
+            display: block;
+          }
+        }
+      }
+    }
+  }
 }
