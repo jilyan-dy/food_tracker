@@ -7,17 +7,27 @@
   position: fixed;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 
   .view {
-    background-color: $beigeColor;
     width: 70%;
     height: 50%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 50px;
+
+    h1 {
+      font-weight: 700;
+      font-size: 300%;
+      color: $darkGrayColor;
+      padding-bottom: 30px;
+
+      @include mobile {
+        top: -15px;
+      }
+    }
 
     @include mobile {
       width: 85%;

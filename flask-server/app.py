@@ -158,7 +158,7 @@ def view_house():
 	house = Household.query.filter(Household.id == house_id).first()
 	members = User.query.filter(User.houseId == house_id).all()
 	members_json = [member.to_json() for member in members]
-	dumps = {"house_name": house.name, "admin":current_user.admin, "members": members_json}
+	dumps = {"house_name": house.name, "admin": current_user.admin, "members": members_json}
 	json_items = json.dumps(dumps)
 	return json_items
 
@@ -186,7 +186,7 @@ def add_house():
 
 				return redirect('/house')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue creating this house"}
 
 		else:
@@ -226,7 +226,7 @@ def join_house(houseId=-1):
 		print("Added you to " + house.name)
 		return redirect('/house')
 
-	except Exception as e:
+	except Exception:
 		return {"issue": "There was an issue with updating your profile."}
 
 
@@ -245,7 +245,7 @@ def verify_members():
 				print("Verification Successful")
 				return redirect('/house')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue with verifying this member."}
 
 	else:
@@ -266,7 +266,7 @@ def leave_house():
 			print("You have left your previous house.")
 			return redirect('/house')
 
-		except Exception as e:
+		except Exception:
 			return {"issue": "There was an issue with leaving the house."}
 
 	else:
@@ -287,7 +287,7 @@ def delete_house():
 				print("Delete Successful")
 				return redirect('/house')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue with deleting the house."}
 
 		else:
@@ -313,7 +313,7 @@ def add_admin(content=None):
 				print("Admin Added Successfully")
 				return redirect('/house')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue with adding this member as admin."}
 
 	else:
@@ -336,7 +336,7 @@ def remove_admin(content=None):
 				print("Admin Removed Successfully")
 				return redirect('/house')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue with removing this member as admin."}
 
 	else:
@@ -371,7 +371,7 @@ def add_user():
 			print("User Added Successfully!")
 			return redirect('/login')
 
-		except Exception as e:
+		except Exception:
 			# return str(e)
 			print("There was an issue adding your info. Please try again.")
 			return {"issue": "Failed to add new user"}
@@ -384,11 +384,15 @@ def add_user():
 @app.route('/profile')
 @login_required
 def view_user():
+	house = Household.query.filter(Household.id == current_user.houseId).first()
+
 	return {
 		"username": current_user.username,
 		"email": current_user.email,
 		"date_added": current_user.date_added.strftime("%Y-%m-%d"),
-		"admin": current_user.admin
+		"admin": current_user.admin,
+		"verified": current_user.verified,
+		"house": house.name if house is not None else "No House Yet"
 	}
 
 
@@ -419,7 +423,7 @@ def update_user():
 				print("Update Successful")
 				return redirect('/profile')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue with updating your profile."}
 
 		else:
@@ -437,7 +441,7 @@ def delete_user():
 		print("Delete Successful")
 		return redirect('/')
 
-	except Exception as e:
+	except Exception:
 		return {"issue": "There was an issue with deleting the user."}
 
 
@@ -446,7 +450,9 @@ def delete_user():
 def add_item():
 	if request.method == 'GET':
 		items = Item.query.filter(
-			((Item.userId == current_user.id) | (Item.shared == current_user.houseId) & (Item.quantity > 0))).order_by(Item.date_expire).all()
+			((Item.userId == current_user.id) |
+				(Item.shared == current_user.houseId) &
+				(Item.quantity > 0))).order_by(Item.date_expire).all()
 		json_items = json.dumps([item.to_json() for item in items])
 		return json_items
 
@@ -474,7 +480,7 @@ def add_item():
 				print("Item Successfully Added")
 				return redirect('/items')
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "There was an issue adding your item"}
 
 		else:
@@ -484,7 +490,7 @@ def add_item():
 				db.session.commit()
 				return {"issue": "Item already exists. Updated quantity instead."}
 
-			except Exception as e:
+			except Exception:
 				return {"issue": "Item already exists. There was an issue updating item."}
 
 
@@ -501,7 +507,7 @@ def delete_item(id):
 			db.session.commit()
 			return redirect('/items')
 
-		except Exception as e:
+		except Exception:
 			return {"issue": "There was an issue with delete the item."}
 
 	else:
@@ -530,48 +536,11 @@ def update_item(id):
 			print("everything went fine")
 			return redirect('/items')
 
-		except Exception as e:
+		except Exception:
 			return {"issue": "There was an issue with updating this item."}
 
 	print("You do not have edit access")
 	return {"issue": "You do not have edit access"}
-
-
-# @app.route('/items/update/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def update_item(id):
-# 	item = Item.query.get_or_404(id)
-# 	if item.userId == current_user.id:
-# 		form = ItemForm()
-
-# 		if form.validate_on_submit():
-# 			item.name = form.name.data
-# 			item.category = form.category.data
-# 			item.quantity = form.quantity.data
-# 			item.date_expire = form.date_expire.data
-# 			item.location = form.location.data
-# 			item.note = form.note.data
-
-# 			try:
-# 				db.session.commit()
-# 				return redirect('/items')
-
-# 			except Exception as e:
-# 				return "There was an issue with updating this item."
-
-# 		else:
-# 			form.name.data = item.name
-# 			form.category.data = item.category
-# 			form.quantity.data = item.quantity
-# 			form.date_expire.data = item.date_expire
-# 			form.location.data = item.location
-# 			form.note.data = item.note
-
-# 			return render_template('item_update.html', form=form)
-
-# 	else:
-# 		print("You do not have edit access")
-# 		return "You do not have edit access"
 
 
 @app.errorhandler(404)
