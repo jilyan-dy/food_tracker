@@ -88,7 +88,7 @@ class Item(db.Model):
 	quantity = db.Column(db.Integer, nullable=False)
 	date_expire = db.Column(db.DateTime, nullable=False)
 	location = db.Column(db.String(64), nullable=False)
-	shared = db.Column(db.Boolean, default=False)
+	shared = db.Column(db.Integer, default=0)
 	note = db.Column(db.String(255))
 
 	def __repr__(self):
@@ -106,6 +106,7 @@ class Item(db.Model):
 			"quantity": self.quantity,
 			"date_expire": self.date_expire.strftime("%Y-%m-%d"),
 			"location": self.location,
+			"shared": self.shared,
 			"note": self.note,
 		}
 
@@ -444,13 +445,15 @@ def delete_user():
 @login_required
 def add_item():
 	if request.method == 'GET':
-		items = Item.query.filter_by(userId=current_user.id).order_by(Item.date_expire).all()
+		items = Item.query.filter(
+			((Item.userId == current_user.id) | (Item.shared == current_user.houseId) & (Item.quantity > 0))).order_by(Item.date_expire).all()
 		json_items = json.dumps([item.to_json() for item in items])
 		return json_items
 
 	else:
 		content = request.json
-		valid_info = Item.query.filter(Item.name == content['name']).first()
+		valid_info = Item.query.filter(
+			(Item.name == content['name']) & (Item.userId == current_user.id)).first()
 
 		if valid_info is None:
 			item = Item(
@@ -459,6 +462,7 @@ def add_item():
 				quantity=content['quantity'],
 				date_expire=datetime.strptime(content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date(),
 				location=content['location'],
+				shared=current_user.houseId if content['shared'] else 0,
 				note=content['note'],
 				userId=current_user.id
 			)
@@ -488,7 +492,9 @@ def add_item():
 @login_required
 def delete_item(id):
 	item = Item.query.get_or_404(id)
-	if item.userId == current_user.id:
+	if item.userId == current_user.id or (
+		current_user.houseId == item.shared and
+		current_user.admin):
 
 		try:
 			db.session.delete(item)
@@ -507,32 +513,25 @@ def delete_item(id):
 @login_required
 def update_item(id):
 	item = Item.query.get_or_404(id)
-	if item.userId == current_user.id:
+	if item.userId == current_user.id or item.shared == current_user.houseId:
 		content = request.json
 
-		valid_edit = Item.query.filter(
-			(Item.name == content['name']) & (Item.id != id)).first()
+		item.name = content['name']
+		item.category = content['category']
+		item.quantity = content['quantity']
+		item.date_expire = datetime.strptime(
+			content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date()
+		item.location = content['location']
+		item.shared = current_user.houseId if content['shared'] else 0
+		item.note = content['note'][9:]
 
-		if valid_edit is None:
-			item.name = content['name']
-			item.category = content['category']
-			item.quantity = content['quantity']
-			item.date_expire = datetime.strptime(
-				content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date()
-			item.location = content['location']
-			item.note = content['note']
+		try:
+			db.session.commit()
+			print("everything went fine")
+			return redirect('/items')
 
-			try:
-				db.session.commit()
-				print("everything went fine")
-				return redirect('/items')
-
-			except Exception as e:
-				return {"issue": "There was an issue with updating this item."}
-
-		else:
-			print("Updated name already exists")
-			return {"issue": "Item already exists"}
+		except Exception as e:
+			return {"issue": "There was an issue with updating this item."}
 
 	print("You do not have edit access")
 	return {"issue": "You do not have edit access"}

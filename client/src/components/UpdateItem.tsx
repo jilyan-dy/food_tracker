@@ -12,10 +12,11 @@ import {
   LOCATION_CHOICES,
   CATEGORY_CHOICES,
 } from "../constants";
-import "./updateItem.scss";
+import "./addItem.scss";
 
 function UpdateItem() {
   const initialDetails = ReactSession.get(REACT_SESSION.editItem);
+  const [shared, setShared] = useState(false);
   const [category, setCategory] = useState(Object.keys(CATEGORY_CHOICES)[0]);
   const [location, setLocation] = useState(Object.keys(LOCATION_CHOICES)[0]);
   const [dateExpire, setDateExpire] = useState(new Date());
@@ -48,6 +49,7 @@ function UpdateItem() {
           quantity: values.quantity,
           date_expire: dateExpire,
           location: location,
+          shared: shared,
           note: values.note,
         }),
       }).then((response) => {
@@ -86,13 +88,20 @@ function UpdateItem() {
     }
   };
 
+  const handleSharedChange = () => {
+    setShared(!shared);
+  };
+
   useEffect(() => {
     if (ReactSession.get(REACT_SESSION.loggedIn)) {
+      console.log(initialDetails["shared"] > 0);
+
       formik.setValues({
         name: initialDetails["name"],
         quantity: initialDetails["quantity"],
         note: initialDetails["note"],
       });
+      setShared(initialDetails["shared"] > 0);
       setCategory(initialDetails["category"]);
       setLocation(initialDetails["location"]);
       setDateExpire(new Date(initialDetails["date_expire"]));
@@ -205,6 +214,16 @@ function UpdateItem() {
                   );
                 })}
               </Select>
+            </div>
+
+            <div className="field checkbox">
+              <label>Shared</label>
+              <input
+                className={"input checkbox"}
+                type="checkbox"
+                checked={shared}
+                onChange={handleSharedChange}
+              />
             </div>
 
             <div className="field">
