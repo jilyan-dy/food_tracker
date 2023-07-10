@@ -2,6 +2,9 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { ReactSession } from "react-client-session";
 
+import EditIcon from "@mui/icons-material/Edit";
+import RemoveIcon from "@mui/icons-material/RemoveCircle";
+
 import {
   REACT_SESSION,
   LOCATION_CHOICES,
@@ -21,6 +24,7 @@ interface Item {
 }
 
 function ItemsList() {
+  const date_today = new Date();
   const [open, setOpen] = useState(false);
   const [toDelete, setToDelete] = useState("-1");
   const [rows, setRows] = useState([]);
@@ -91,14 +95,19 @@ function ItemsList() {
               <th>{COLUMNS[2]}</th>
               <th>{COLUMNS[3]}</th>
               <th>{COLUMNS[4]}</th>
-              {/* <th>Actions</th> */}
+              <th className="th-actions">Actions</th>
             </tr>
           </thead>
           <tbody className="table_body">
             {rows.map((row) => {
               return (
                 <Fragment key={row["id"]}>
-                  <tr className="rows">
+                  <tr
+                    className={
+                      "rows " +
+                      (new Date(row["date_expire"]) <= date_today && "expired")
+                    }
+                  >
                     <td className="primary_cell">{row["name"]}</td>
                     <td className="primary_cell">{row["quantity"]}</td>
                     <td className="primary_cell">{row["date_expire"]}</td>
@@ -108,18 +117,27 @@ function ItemsList() {
                     <td className="primary_cell">
                       {CATEGORY_CHOICES[row["category"]]}
                     </td>
+                    <td className="primary_cell">
+                      <div className="item_actions">
+                        <Link
+                          onClick={() => handleUpdateClick(row)}
+                          to="update"
+                        >
+                          <EditIcon className="icon" />
+                        </Link>{" "}
+                        <Link
+                          onClick={() => handleDeleteClick(row["id"])}
+                          to=""
+                          className="delete"
+                        >
+                          <RemoveIcon className="icon" />
+                        </Link>
+                      </div>
+                    </td>
                   </tr>
                   <tr className="rows extra">
-                    <td colSpan={4} className="secondary_cell note">
+                    <td colSpan={6} className="secondary_cell note">
                       {row["note"]}
-                    </td>
-                    <td className="secondary_cell item_actions">
-                      <Link onClick={() => handleUpdateClick(row)} to="update">
-                        Edit
-                      </Link>{" "}
-                      <Link onClick={() => handleDeleteClick(row["id"])} to="">
-                        Delete
-                      </Link>
                     </td>
                   </tr>
                 </Fragment>

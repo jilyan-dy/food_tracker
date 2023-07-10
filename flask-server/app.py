@@ -450,7 +450,8 @@ def add_item():
 
 	else:
 		content = request.json
-		valid_info = Item.query.filter(Item.name == content['name']).first()
+		valid_info = Item.query.filter(
+			(Item.name == content['name']) & (Item.userId == current_user.id)).first()
 
 		if valid_info is None:
 			item = Item(
