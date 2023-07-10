@@ -27,7 +27,6 @@ function UpdateItem() {
     initialValues: {
       name: "",
       quantity: 1,
-      shared: false,
       note: "",
     },
     enableReinitialize: true,
@@ -95,12 +94,14 @@ function UpdateItem() {
 
   useEffect(() => {
     if (ReactSession.get(REACT_SESSION.loggedIn)) {
+      console.log(initialDetails["shared"] > 0);
+
       formik.setValues({
         name: initialDetails["name"],
         quantity: initialDetails["quantity"],
-        shared: initialDetails["shared"],
         note: initialDetails["note"],
       });
+      setShared(initialDetails["shared"] > 0);
       setCategory(initialDetails["category"]);
       setLocation(initialDetails["location"]);
       setDateExpire(new Date(initialDetails["date_expire"]));

@@ -73,7 +73,7 @@ function ItemsList() {
         window.location.href = response.url;
       } else {
         response.json().then((responseJson) => {
-          setDeleteIssue(responseJson);
+          setDeleteIssue(responseJson["issue"]);
         });
       }
     });
@@ -137,7 +137,7 @@ function ItemsList() {
                   </tr>
                   <tr className="rows extra">
                     <td colSpan={6} className="secondary_cell note">
-                      {row["note"]}
+                      {(row["shared"] && "(shared) ") + row["note"]}
                     </td>
                   </tr>
                 </Fragment>
