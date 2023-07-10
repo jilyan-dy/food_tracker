@@ -88,7 +88,7 @@ class Item(db.Model):
 	quantity = db.Column(db.Integer, nullable=False)
 	date_expire = db.Column(db.DateTime, nullable=False)
 	location = db.Column(db.String(64), nullable=False)
-	shared = db.Column(db.Boolean, default=False)
+	shared = db.Column(db.Integer, default=-1)
 	note = db.Column(db.String(255))
 
 	def __repr__(self):
@@ -106,7 +106,7 @@ class Item(db.Model):
 			"quantity": self.quantity,
 			"date_expire": self.date_expire.strftime("%Y-%m-%d"),
 			"location": self.location,
-			"note": self.note,
+			"note": ("(shared) " + self.note) if self.shared else self.note,
 		}
 
 
@@ -444,7 +444,9 @@ def delete_user():
 @login_required
 def add_item():
 	if request.method == 'GET':
-		items = Item.query.filter_by(userId=current_user.id).order_by(Item.date_expire).all()
+		items = Item.query.filter(
+			(Item.userId == current_user.id) | (Item.shared == current_user.houseId)).order_by(
+			Item.date_expire).all()
 		json_items = json.dumps([item.to_json() for item in items])
 		return json_items
 
@@ -460,6 +462,7 @@ def add_item():
 				quantity=content['quantity'],
 				date_expire=datetime.strptime(content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date(),
 				location=content['location'],
+				shared=current_user.houseId if content['shared'] else -1,
 				note=content['note'],
 				userId=current_user.id
 			)
@@ -521,6 +524,7 @@ def update_item(id):
 			item.date_expire = datetime.strptime(
 				content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date()
 			item.location = content['location']
+			item.shared = current_user.houseId if content['shared'] else -1
 			item.note = content['note']
 
 			try:
