@@ -18,6 +18,7 @@ import "./addItem.scss";
 function AddItem() {
   let date = new Date();
   date.setDate(date.getDate() + 14);
+  const [shared, setShared] = useState(false);
   const [category, setCategory] = useState(Object.keys(CATEGORY_CHOICES)[0]);
   const [location, setLocation] = useState(Object.keys(LOCATION_CHOICES)[0]);
   const [dateExpire, setDateExpire] = useState(date);
@@ -28,6 +29,7 @@ function AddItem() {
     initialValues: {
       name: "",
       quantity: 1,
+      shared: false,
       note: "",
     },
     validationSchema: Yup.object({
@@ -49,6 +51,7 @@ function AddItem() {
           quantity: values.quantity,
           date_expire: dateExpire,
           location: location,
+          shared: shared,
           note: values.note,
         }),
       }).then((response) => {
@@ -84,6 +87,10 @@ function AddItem() {
     } else {
       setDateIssue("");
     }
+  };
+
+  const handleSharedChange = () => {
+    setShared(!shared);
   };
 
   useEffect(() => {
@@ -154,7 +161,6 @@ function AddItem() {
               >
                 {formik.errors.quantity}
               </p>
-              <br />
               <input
                 className={"input " + ITEM_FORMAT[2].type}
                 type={ITEM_FORMAT[2].type}
@@ -196,6 +202,16 @@ function AddItem() {
                   );
                 })}
               </Select>
+            </div>
+
+            <div className="field checkbox">
+              <label>Shared</label>
+              <input
+                className={"input checkbox"}
+                type="checkbox"
+                checked={shared}
+                onChange={handleSharedChange}
+              />
             </div>
 
             <div className="field">

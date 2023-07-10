@@ -88,7 +88,7 @@ class Item(db.Model):
 	quantity = db.Column(db.Integer, nullable=False)
 	date_expire = db.Column(db.DateTime, nullable=False)
 	location = db.Column(db.String(64), nullable=False)
-	shared = db.Column(db.Integer, default=-1)
+	shared = db.Column(db.Integer, default=0)
 	note = db.Column(db.String(255))
 
 	def __repr__(self):
@@ -106,6 +106,7 @@ class Item(db.Model):
 			"quantity": self.quantity,
 			"date_expire": self.date_expire.strftime("%Y-%m-%d"),
 			"location": self.location,
+			"shared": self.shared,
 			"note": ("(shared) " + self.note) if self.shared else self.note,
 		}
 
