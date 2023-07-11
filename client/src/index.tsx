@@ -15,7 +15,7 @@ import Profile from "./pages/Profile";
 import ViewProfile from "./components/ViewProfile";
 import EditProfile from "./components/updateProfile";
 import House from "./pages/House";
-import ViewHouse from "./components/ViewHouse";
+// import ViewHouse from "./components/ViewHouse";
 
 export default function Index() {
   ReactSession.setStoreType("localStorage");
@@ -35,7 +35,7 @@ export default function Index() {
             <Route path="update" element={<UpdateItem />} />
           </Route>
           <Route path="house" element={<House />}>
-            <Route index element={<ViewHouse />} />
+            {/* <Route index element={<ViewHouse />} /> */}
             {/* <Route path="update" element={<EditHouse />} /> */}
           </Route>
 

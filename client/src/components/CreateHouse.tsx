@@ -1,15 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import "./viewHouse.scss";
-
-interface PopupProps {
-  handleYes: Function;
-  handleNo: Function;
-  issue: string;
-  content: string;
-}
 
 const CreateHouse = () => {
   const [issue, setIssue] = useState("");
