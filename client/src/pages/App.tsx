@@ -14,7 +14,7 @@ function App() {
     <div className="home">
       <div className="wrapper">
         <div className="left">
-          <h1>Food Tracker</h1>
+          <h1 className="logo-name">Food Tracker</h1>
           <h2>Start tracking your inventory!</h2>
         </div>
         <div className="right">

@@ -33,7 +33,7 @@ function Navbar() {
               }
               className="logo"
             >
-              <span className="name">Food Inventory</span>
+              <span className="logo-name">Food Tracker</span>
             </Link>
           </div>
           <div
