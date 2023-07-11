@@ -1,0 +1,210 @@
+@import "../global.scss";
+
+.household {
+  background-color: $whiteColor;
+  width: 100%;
+  height: auto;
+  top: 100px;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: $transGrayColor;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+
+    .content {
+      position: absolute;
+      width: 40%;
+      height: auto;
+      background-color: $whiteColor;
+      border: 1px solid $oliveColor;
+      border-radius: 10px;
+      margin: 20px auto;
+      padding: 20px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      left: 50%;
+      top: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+
+      .close {
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 200%;
+        font-weight: 700;
+        color: $oliveColor;
+        position: absolute;
+        right: 30px;
+        top: 15px;
+        z-index: 1;
+      }
+
+      .add-house-actions {
+        width: 55%;
+        padding: 10px 5px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        border: none;
+
+        a {
+          text-decoration: none;
+          cursor: pointer;
+
+          .action {
+            color: black;
+            font-weight: 700;
+            font-size: 200%;
+
+            &.active {
+              border-bottom: 3px solid black;
+            }
+          }
+        }
+      }
+
+      .forms {
+        width: 100%;
+        .house {
+          .form {
+            .formIssue {
+              display: none;
+
+              &.active {
+                display: block;
+                font-weight: 200;
+                font-size: 100%;
+                color: $errorColor;
+                margin: 0px;
+                padding-bottom: 15px;
+                text-align: center;
+              }
+            }
+
+            .fields {
+              padding-bottom: 20px;
+
+              .issue {
+                display: none;
+
+                &.active {
+                  display: block;
+                  font-weight: 200;
+                  font-size: 90%;
+                  color: $errorColor;
+                  padding-top: 4px;
+                  padding-bottom: 3px;
+                  padding-left: 5px;
+                  margin: 0px;
+                  position: inherit;
+                  text-align: center;
+                }
+              }
+
+              .field {
+                width: 98%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                // align-items: center;
+
+                .label {
+                  font-weight: 300;
+                  font-size: 110%;
+                  padding-top: 15px;
+
+                  &.dropdown {
+                    padding-top: 8px;
+                  }
+                }
+
+                input {
+                  font-size: 100%;
+                  margin: 8px 3px 15px 3px;
+
+                  &.text {
+                    width: 70%;
+                    height: 30px;
+                  }
+                }
+              }
+
+              .button {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 15px;
+
+                button {
+                  background: none;
+                  color: inherit;
+                  border: none;
+                  padding: 0;
+                  font: inherit;
+                  cursor: pointer;
+                  outline: inherit;
+
+                  span::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    z-index: -1;
+                    background-color: $oliveColor;
+                    color: $whiteColor;
+
+                    transition: transform 300ms ease-in-out;
+                    transform: scaleX(0);
+                    transform-origin: left;
+                  }
+
+                  span:hover::before,
+                  span:focus::before {
+                    transform: scaleX(1);
+                  }
+
+                  span {
+                    display: block;
+                    padding: 5px 10px;
+                    font-weight: 700;
+                    font-size: 90%;
+                    box-sizing: border-box;
+                    color: $oliveColor;
+                    position: relative;
+                    border: 2px solid $primaryColor;
+                    z-index: 1;
+                    transition: color 300ms ease-in-out;
+                    cursor: pointer;
+                  }
+
+                  span:hover,
+                  span:focus {
+                    color: $whiteColor;
+                    border: 2px solid $oliveColor;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

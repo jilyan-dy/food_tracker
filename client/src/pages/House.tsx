@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import "../components/viewHouse.scss";
+import "./house.scss";
 import CreateHouse from "../components/CreateHouse";
 import JoinHouse from "../components/JoinHouse";
 import ViewHouse from "../components/ViewHouse";

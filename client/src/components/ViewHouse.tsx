@@ -57,6 +57,72 @@ const ViewHouse = (props: Props) => {
     });
   };
 
+  const handleAdminAdd = (memberId: string) => {
+    fetch("/admin/add", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId: memberId,
+      }),
+    }).then((response) => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          console.log(responseJson["issue"]);
+          setIssue(responseJson["issue"]);
+        });
+      }
+    });
+  };
+
+  const handleAdminRemove = (memberId: string) => {
+    fetch("/admin/remove", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId: memberId,
+      }),
+    }).then((response) => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          console.log(responseJson["issue"]);
+          setIssue(responseJson["issue"]);
+        });
+      }
+    });
+  };
+
+  const handleVerifyClick = (memberId: string) => {
+    fetch("/house/verify", {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId: memberId,
+      }),
+    }).then((response) => {
+      if (response.redirected) {
+        window.location.href = response.url;
+      } else {
+        response.json().then((responseJson) => {
+          console.log(responseJson["issue"]);
+          setIssue(responseJson["issue"]);
+        });
+      }
+    });
+  };
+
   return (
     <div className="has-house">
       <h1>House Details</h1>
@@ -101,7 +167,25 @@ const ViewHouse = (props: Props) => {
                         <td className="primary">{member["username"]}</td>
                         <td className="primary bool">
                           {member["admin"] ? (
-                            <VerifiedIcon />
+                            values["admin"] ? (
+                              <Link
+                                onClick={() => handleAdminRemove(member["id"])}
+                                to=""
+                                className="admin"
+                              >
+                                <VerifiedIcon />
+                              </Link>
+                            ) : (
+                              <DoNotDisturbIcon />
+                            )
+                          ) : values["admin"] ? (
+                            <Link
+                              onClick={() => handleAdminAdd(member["id"])}
+                              to=""
+                              className="not-admin"
+                            >
+                              <DoNotDisturbIcon />
+                            </Link>
                           ) : (
                             <DoNotDisturbIcon />
                           )}
@@ -109,6 +193,14 @@ const ViewHouse = (props: Props) => {
                         <td className="primary bool">
                           {member["verified"] ? (
                             <VerifiedIcon />
+                          ) : values["admin"] ? (
+                            <Link
+                              onClick={() => handleVerifyClick(member["id"])}
+                              to=""
+                              className="verify"
+                            >
+                              <DoNotDisturbIcon />
+                            </Link>
                           ) : (
                             <DoNotDisturbIcon />
                           )}
