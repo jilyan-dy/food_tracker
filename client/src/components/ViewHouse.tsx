@@ -30,7 +30,7 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleDeleteClick = () => {
-    fetch("/house/delete").then((response) => {
+    fetch("/api/house/delete").then((response) => {
       if (response.redirected) {
         window.location.href = response.url;
       } else {
@@ -43,7 +43,7 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleLeaveClick = () => {
-    fetch("/house/leave", {
+    fetch("/api/house/leave", {
       method: "post",
     }).then((response) => {
       if (response.redirected) {
@@ -58,7 +58,7 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleAdminAdd = (memberId: string) => {
-    fetch("/admin/add", {
+    fetch("/api/admin/add", {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -80,7 +80,7 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleAdminRemove = (memberId: string) => {
-    fetch("/admin/remove", {
+    fetch("/api/admin/remove", {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -102,7 +102,7 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleVerifyClick = (memberId: string) => {
-    fetch("/house/verify", {
+    fetch("/api/house/verify", {
       method: "post",
       headers: {
         Accept: "application/json",

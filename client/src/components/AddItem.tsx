@@ -39,7 +39,7 @@ function AddItem() {
     }),
 
     onSubmit: (values) => {
-      fetch("/items", {
+      fetch("/api/items", {
         method: "post",
         headers: {
           Accept: "application/json",

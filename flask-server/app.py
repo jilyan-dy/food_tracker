@@ -113,10 +113,10 @@ class Item(db.Model):
 
 @app.route('/', methods=['GET'])
 def index():
-	return render_template('index.html')
+	return render_template("index.html")
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/api/login', methods=['GET', 'POST'])
 def login():
 	content = request.json
 	user = User.query.filter_by(username=content['username']).first()
@@ -143,7 +143,7 @@ def logout():
 	return redirect('/')
 
 
-@app.route('/house')
+@app.route('/api/house')
 @login_required
 def view_house():
 	if current_user.houseId is None:
@@ -163,7 +163,7 @@ def view_house():
 	return json_items
 
 
-@app.route('/house/add', methods=['GET', 'POST'])
+@app.route('/api/house/add', methods=['GET', 'POST'])
 @login_required
 def add_house():
 	if request.method != 'GET':
@@ -194,7 +194,7 @@ def add_house():
 			return {"issue": "House already exists."}
 
 
-@app.route('/house/join', methods=['GET', 'POST'])
+@app.route('/api/house/join', methods=['GET', 'POST'])
 @login_required
 def join_house(houseId=-1):
 	if houseId == -1:
@@ -230,7 +230,7 @@ def join_house(houseId=-1):
 		return {"issue": "There was an issue with updating your profile."}
 
 
-@app.route('/house/verify', methods=['GET', 'POST'])
+@app.route('/api/house/verify', methods=['GET', 'POST'])
 @login_required
 def verify_members():
 	if current_user.admin:
@@ -252,7 +252,7 @@ def verify_members():
 		return {"issue": "You do not have access to verify other members."}
 
 
-@app.route('/house/leave', methods=['GET', 'POST'])
+@app.route('/api/house/leave', methods=['GET', 'POST'])
 @login_required
 def leave_house():
 	if current_user.houseId is not None:
@@ -273,7 +273,7 @@ def leave_house():
 		return {"issue": "You do not belong to a house. Please join a house first."}
 
 
-@app.route('/house/delete')
+@app.route('/api/house/delete')
 @login_required
 def delete_house():
 	house = Household.query.get_or_404(current_user.houseId)
@@ -297,7 +297,7 @@ def delete_house():
 		return {"issue": "You do not have delete access for this house."}
 
 
-@app.route('/admin/add', methods=['GET', 'POST'])
+@app.route('/api/admin/add', methods=['GET', 'POST'])
 @login_required
 def add_admin(content=None):
 	if current_user.admin:
@@ -320,7 +320,7 @@ def add_admin(content=None):
 		return {"issue": "You do not have admin access."}
 
 
-@app.route('/admin/remove', methods=['GET', 'POST'])
+@app.route('/api/admin/remove', methods=['GET', 'POST'])
 @login_required
 def remove_admin(content=None):
 	if current_user.admin:
@@ -343,7 +343,7 @@ def remove_admin(content=None):
 		return {"issue": "You do not have admin access."}
 
 
-@app.route('/admin/change', methods=['GET', 'POST'])
+@app.route('/api/admin/change', methods=['GET', 'POST'])
 @login_required
 def change_admin():
 	if current_user.admin:
@@ -351,7 +351,7 @@ def change_admin():
 		remove_admin(request.json)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/api/register', methods=['GET', 'POST'])
 @login_required
 def add_user():
 	user = None
@@ -381,7 +381,7 @@ def add_user():
 		return {"issue": "User already exists"}
 
 
-@app.route('/profile')
+@app.route('/api/profile')
 @login_required
 def view_user():
 	house = Household.query.filter(Household.id == current_user.houseId).first()
@@ -396,7 +396,7 @@ def view_user():
 	}
 
 
-@app.route('/profile/update', methods=['GET', 'POST'])
+@app.route('/api/profile/update', methods=['GET', 'POST'])
 @login_required
 def update_user():
 	if request.method == 'GET':
@@ -430,7 +430,7 @@ def update_user():
 			return {"issue": "Incorrect Password"}
 
 
-@app.route('/profile/delete')
+@app.route('/api/profile/delete')
 @login_required
 def delete_user():
 	user = User.query.get_or_404(current_user.id)
@@ -445,7 +445,7 @@ def delete_user():
 		return {"issue": "There was an issue with deleting the user."}
 
 
-@app.route('/items', methods=['GET', 'POST'])
+@app.route('/api/items', methods=['GET', 'POST'])
 @login_required
 def add_item():
 	if request.method == 'GET':
@@ -494,7 +494,7 @@ def add_item():
 				return {"issue": "Item already exists. There was an issue updating item."}
 
 
-@app.route('/items/delete/<int:id>', methods=["DELETE"])
+@app.route('/api/items/delete/<int:id>', methods=["DELETE"])
 @login_required
 def delete_item(id):
 	item = Item.query.get_or_404(id)
@@ -515,7 +515,7 @@ def delete_item(id):
 		return {"issue": "You do not have delete access"}
 
 
-@app.route('/items/update/<int:id>', methods=['GET', 'POST'])
+@app.route('/api/items/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_item(id):
 	item = Item.query.get_or_404(id)

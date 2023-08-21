@@ -16,7 +16,7 @@ const CreateHouse = () => {
     }),
 
     onSubmit: (values) => {
-      fetch("/house/add", {
+      fetch("/api/house/add", {
         method: "post",
         headers: {
           Accept: "application/json",

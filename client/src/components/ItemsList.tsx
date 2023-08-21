@@ -33,7 +33,7 @@ function ItemsList() {
   const COLUMNS = ["Name", "Qty", "Exp Date", "Location", "Category"];
 
   useEffect(() => {
-    fetch("/items", {
+    fetch("/api/items", {
       method: "get",
     }).then((response) => {
       if (response.redirected) {
@@ -60,7 +60,7 @@ function ItemsList() {
   };
 
   const handleYes = () => {
-    fetch(`/items/delete/${toDelete}`, {
+    fetch(`/api/items/delete/${toDelete}`, {
       method: "delete",
       headers: {
         Accept: "application/json",
