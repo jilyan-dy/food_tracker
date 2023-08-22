@@ -1,114 +1,19 @@
 import json
-from flask import Flask, request, render_template, redirect
-from flask_sqlalchemy import SQLAlchemy
+from flask import request, render_template, redirect
 from flask_login import (
-	UserMixin, login_user, LoginManager, login_required, logout_user, current_user)
-from flask_migrate import Migrate
-
-from werkzeug.security import generate_password_hash, check_password_hash
+	login_user, login_required, logout_user, current_user)
 from datetime import datetime
 
-from database.credentials import USERNAME, PASSWORD, SECRET_KEY, DBNAME
+from models.User import User
+from models.Item import Item
+from models.Household import Household
 
-
-app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://' + \
-	USERNAME + ':' + PASSWORD + '@localhost/' + DBNAME
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = SECRET_KEY
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
+from settings import app, db, login_manager
 
 
 @login_manager.user_loader
 def load_user(user_id):
 	return User.query.get(int(user_id))
-
-
-class Household(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(20), nullable=False, unique=True)
-	members = db.relationship('User', backref='house')
-
-	def __repr__(self):
-		return '<Household %r>' % self.id
-
-	def __str__(self) -> str:
-		return self.name
-
-
-class User(db.Model, UserMixin):
-	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(20), nullable=False, unique=True)
-	email = db.Column(db.String(64), nullable=False, unique=True)
-	password_hash = db.Column(db.String(255), nullable=False)
-	date_added = db.Column(db.DateTime, default=datetime.utcnow)
-	admin = db.Column(db.Boolean, default=False, nullable=False)
-	verified = db.Column(db.Boolean, default=False, nullable=False)
-	active = db.Column(db.Boolean, default=True)
-	houseId = db.Column(db.Integer, db.ForeignKey('household.id'))
-	items = db.relationship('Item', backref='owner')
-
-	@property
-	def password(self):
-		raise AttributeError('Password is not a readable attribute!')
-
-	@password.setter
-	def password(self, password):
-		self.password_hash = generate_password_hash(password)
-
-	def verify_password(self, password):
-		return check_password_hash(self.password_hash, password)
-
-	def __repr__(self):
-		return '<User %r>' % self.id
-
-	def __str__(self) -> str:
-		return self.username + " " + self.email
-
-	def to_json(self):
-		return {
-			"id": self.id,
-			"username": self.username,
-			"admin": self.admin,
-			"verified": self.verified,
-		}
-
-
-class Item(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	userId = db.Column(db.Integer, db.ForeignKey('user.id'))
-	name = db.Column(db.String(64), nullable=False)
-	category = db.Column(db.String(64), nullable=False)
-	quantity = db.Column(db.Integer, nullable=False)
-	date_expire = db.Column(db.DateTime, nullable=False)
-	location = db.Column(db.String(64), nullable=False)
-	shared = db.Column(db.Integer, default=0)
-	note = db.Column(db.String(255))
-
-	def __repr__(self):
-		return '<Item %r>' % self.id
-
-	def __str__(self) -> str:
-		return self.name + " " + self.category + " " + \
-			self.quantity + " " + self.date_expire + " " + self.location
-
-	def to_json(self):
-		return {
-			"id": self.id,
-			"name": self.name,
-			"category": self.category,
-			"quantity": self.quantity,
-			"date_expire": self.date_expire.strftime("%Y-%m-%d"),
-			"location": self.location,
-			"shared": True if self.shared != 0 else False,
-			"note": self.note,
-		}
 
 
 @app.route('/', methods=['GET'])
