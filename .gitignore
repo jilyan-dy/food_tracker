@@ -27,6 +27,7 @@ flask-server/__pycache__
 flask-server/database
 flask-server/migrations
 flask-server/models/__pycache__
+flask-server/routes/__pycache__
 
 trash
 node_modules
