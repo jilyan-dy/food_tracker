@@ -29,7 +29,7 @@ function House() {
   };
 
   useEffect(() => {
-    fetch("/house", {
+    fetch("/api/house", {
       method: "get",
     }).then((response) => {
       console.log(values["house_name"]);

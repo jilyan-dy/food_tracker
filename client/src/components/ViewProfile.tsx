@@ -35,7 +35,9 @@ function ViewProfile() {
   };
 
   const handleYes = () => {
-    fetch("/profile/delete").then((response) => {
+    fetch("/api/profile", {
+      method: "delete",
+    }).then((response) => {
       if (response.redirected) {
         setOpen(false);
         ReactSession.set(REACT_SESSION.loggedIn, false);
@@ -50,7 +52,7 @@ function ViewProfile() {
   };
 
   useEffect(() => {
-    fetch("/profile", {
+    fetch("/api/profile", {
       method: "get",
     }).then((response) => {
       if (response.redirected) {

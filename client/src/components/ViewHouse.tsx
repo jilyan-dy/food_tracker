@@ -30,7 +30,9 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleDeleteClick = () => {
-    fetch("/house/delete").then((response) => {
+    fetch("/api/house", {
+      method: "delete",
+    }).then((response) => {
       if (response.redirected) {
         window.location.href = response.url;
       } else {
@@ -43,8 +45,8 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleLeaveClick = () => {
-    fetch("/house/leave", {
-      method: "post",
+    fetch("/api/house/member", {
+      method: "delete",
     }).then((response) => {
       if (response.redirected) {
         window.location.href = response.url;
@@ -57,31 +59,35 @@ const ViewHouse = (props: Props) => {
     });
   };
 
-  const handleAdminAdd = (memberId: string) => {
-    fetch("/admin/add", {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        memberId: memberId,
-      }),
-    }).then((response) => {
-      if (response.redirected) {
-        window.location.href = response.url;
-      } else {
-        response.json().then((responseJson) => {
-          console.log(responseJson["issue"]);
-          setIssue(responseJson["issue"]);
-        });
-      }
-    });
+  const handleAdminAdd = (memberId: string, memberVerified: boolean) => {
+    if (memberVerified) {
+      fetch("/api/admin", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          memberId: memberId,
+        }),
+      }).then((response) => {
+        if (response.redirected) {
+          window.location.href = response.url;
+        } else {
+          response.json().then((responseJson) => {
+            console.log(responseJson["issue"]);
+            setIssue(responseJson["issue"]);
+          });
+        }
+      });
+    } else {
+      setIssue("Member needs to be verified first.");
+    }
   };
 
   const handleAdminRemove = (memberId: string) => {
-    fetch("/admin/remove", {
-      method: "post",
+    fetch("/api/admin", {
+      method: "delete",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -102,8 +108,8 @@ const ViewHouse = (props: Props) => {
   };
 
   const handleVerifyClick = (memberId: string) => {
-    fetch("/house/verify", {
-      method: "post",
+    fetch("/api/house/member", {
+      method: "put",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -166,8 +172,8 @@ const ViewHouse = (props: Props) => {
                       <tr className="rows">
                         <td className="primary">{member["username"]}</td>
                         <td className="primary bool">
-                          {member["admin"] ? (
-                            values["admin"] ? (
+                          {values["admin"] ? (
+                            member["admin"] ? (
                               <Link
                                 onClick={() => handleAdminRemove(member["id"])}
                                 to=""
@@ -176,16 +182,21 @@ const ViewHouse = (props: Props) => {
                                 <VerifiedIcon />
                               </Link>
                             ) : (
-                              <DoNotDisturbIcon />
+                              <Link
+                                onClick={() =>
+                                  handleAdminAdd(
+                                    member["id"],
+                                    member["verified"]
+                                  )
+                                }
+                                to=""
+                                className="not-admin"
+                              >
+                                <DoNotDisturbIcon />
+                              </Link>
                             )
-                          ) : values["admin"] ? (
-                            <Link
-                              onClick={() => handleAdminAdd(member["id"])}
-                              to=""
-                              className="not-admin"
-                            >
-                              <DoNotDisturbIcon />
-                            </Link>
+                          ) : member["admin"] ? (
+                            <VerifiedIcon />
                           ) : (
                             <DoNotDisturbIcon />
                           )}

@@ -33,7 +33,7 @@ function ItemsList() {
   const COLUMNS = ["Name", "Qty", "Exp Date", "Location", "Category"];
 
   useEffect(() => {
-    fetch("/items", {
+    fetch("/api/items", {
       method: "get",
     }).then((response) => {
       if (response.redirected) {
@@ -60,7 +60,7 @@ function ItemsList() {
   };
 
   const handleYes = () => {
-    fetch(`/items/delete/${toDelete}`, {
+    fetch(`/api/items/${toDelete}`, {
       method: "delete",
       headers: {
         Accept: "application/json",
@@ -137,7 +137,7 @@ function ItemsList() {
                   </tr>
                   <tr className="rows extra">
                     <td colSpan={6} className="secondary_cell note">
-                      {(row["shared"] && "(shared) ") + row["note"]}
+                      {(row["shared"] ? "(shared) " : "") + row["note"]}
                     </td>
                   </tr>
                 </Fragment>

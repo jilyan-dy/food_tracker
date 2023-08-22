@@ -20,7 +20,7 @@ const JoinHouse = (options: JSONObject) => {
     initialValues: {},
 
     onSubmit: () => {
-      fetch("/house/join", {
+      fetch("/api/house/member", {
         method: "post",
         headers: {
           Accept: "application/json",

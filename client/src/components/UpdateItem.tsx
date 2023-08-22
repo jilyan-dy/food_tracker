@@ -37,8 +37,8 @@ function UpdateItem() {
     }),
 
     onSubmit: (values) => {
-      fetch(`/items/update/${initialDetails["id"]}`, {
-        method: "post",
+      fetch(`/api/items/${initialDetails["id"]}`, {
+        method: "put",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

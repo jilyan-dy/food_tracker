@@ -106,7 +106,7 @@ class Item(db.Model):
 			"quantity": self.quantity,
 			"date_expire": self.date_expire.strftime("%Y-%m-%d"),
 			"location": self.location,
-			"shared": self.shared,
+			"shared": True if self.shared != 0 else False,
 			"note": self.note,
 		}
 
@@ -116,7 +116,36 @@ def index():
 	return render_template('index.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/api/register', methods=['POST'])
+def add_user():
+	user = None
+	content = request.json
+	valid_info = User.query.filter(
+		(User.email == content['email']) | (User.username == content['username'])).first()
+	if valid_info is None:
+		user = User(
+			username=content['username'],
+			email=content['email'],
+			password=content['password'])
+
+		try:
+			db.session.add(user)
+			db.session.commit()
+
+			print("User Added Successfully!")
+			return redirect('/login')
+
+		except Exception:
+			# return str(e)
+			print("There was an issue adding your info. Please try again.")
+			return {"issue": "Failed to add new user"}
+
+	else:
+		print("User Already Exists")
+		return {"issue": "User already exists"}
+
+
+@app.route('/api/login', methods=['POST'])
 def login():
 	content = request.json
 	user = User.query.filter_by(username=content['username']).first()
@@ -125,6 +154,7 @@ def login():
 
 		if user.verify_password(content['password']):
 			login_user(user)
+			print("Login Successful")
 			return redirect('/items')
 
 		else:
@@ -136,14 +166,14 @@ def login():
 		return {"issue": "That User Doesn't Exist! Try Again..."}
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/api/logout', methods=['POST'])
 @login_required
 def logout():
 	logout_user()
 	return redirect('/')
 
 
-@app.route('/house')
+@app.route('/api/house', methods=['GET'])
 @login_required
 def view_house():
 	if current_user.houseId is None:
@@ -163,38 +193,38 @@ def view_house():
 	return json_items
 
 
-@app.route('/house/add', methods=['GET', 'POST'])
+@app.route('/api/house', methods=['POST'])
 @login_required
 def add_house():
-	if request.method != 'GET':
-		content = request.json
-		valid_info = Household.query.filter(Household.name == content['name']).first()
+	content = request.json
+	valid_info = Household.query.filter(Household.name == content['name']).first()
 
-		if valid_info is None:
-			house = Household(
-				name=content['name']
-			)
+	if valid_info is None:
+		house = Household(
+			name=content['name']
+		)
 
-			try:
-				db.session.add(house)
-				db.session.commit()
+		try:
+			db.session.add(house)
+			db.session.commit()
 
-				print("Successfully Created House")
+			print("Successfully Created House")
 
-				house = Household.query.filter(Household.name == content['name']).first()
-				join_house(house.id)
+			house = Household.query.filter(Household.name == content['name']).first()
+			join_house(house.id)
 
-				return redirect('/house')
+			return redirect('/house')
 
-			except Exception:
-				return {"issue": "There was an issue creating this house"}
+		except Exception:
+			return {"issue": "There was an issue creating this house"}
 
-		else:
-			join_house(valid_info.id)
-			return {"issue": "House already exists."}
+	else:
+		join_house(valid_info.id)
+		return {"issue": "House already exists."}
 
 
-@app.route('/house/join', methods=['GET', 'POST'])
+# comeback
+@app.route('/api/house/member', methods=['POST'])
 @login_required
 def join_house(houseId=-1):
 	if houseId == -1:
@@ -230,7 +260,8 @@ def join_house(houseId=-1):
 		return {"issue": "There was an issue with updating your profile."}
 
 
-@app.route('/house/verify', methods=['GET', 'POST'])
+# comeback
+@app.route('/api/house/member', methods=['PUT'])
 @login_required
 def verify_members():
 	if current_user.admin:
@@ -252,7 +283,7 @@ def verify_members():
 		return {"issue": "You do not have access to verify other members."}
 
 
-@app.route('/house/leave', methods=['GET', 'POST'])
+@app.route('/api/house/member', methods=['DELETE'])
 @login_required
 def leave_house():
 	if current_user.houseId is not None:
@@ -273,7 +304,7 @@ def leave_house():
 		return {"issue": "You do not belong to a house. Please join a house first."}
 
 
-@app.route('/house/delete')
+@app.route('/api/house', methods=['DELETE'])
 @login_required
 def delete_house():
 	house = Household.query.get_or_404(current_user.houseId)
@@ -297,7 +328,7 @@ def delete_house():
 		return {"issue": "You do not have delete access for this house."}
 
 
-@app.route('/admin/add', methods=['GET', 'POST'])
+@app.route('/api/admin', methods=['POST'])
 @login_required
 def add_admin(content=None):
 	if current_user.admin:
@@ -320,7 +351,7 @@ def add_admin(content=None):
 		return {"issue": "You do not have admin access."}
 
 
-@app.route('/admin/remove', methods=['GET', 'POST'])
+@app.route('/api/admin', methods=['DELETE'])
 @login_required
 def remove_admin(content=None):
 	if current_user.admin:
@@ -343,7 +374,7 @@ def remove_admin(content=None):
 		return {"issue": "You do not have admin access."}
 
 
-@app.route('/admin/change', methods=['GET', 'POST'])
+@app.route('/api/admin', methods=['PUT'])
 @login_required
 def change_admin():
 	if current_user.admin:
@@ -351,37 +382,7 @@ def change_admin():
 		remove_admin(request.json)
 
 
-@app.route('/register', methods=['GET', 'POST'])
-@login_required
-def add_user():
-	user = None
-	content = request.json
-	valid_info = User.query.filter(
-		(User.email == content['email']) | (User.username == content['username'])).first()
-	if valid_info is None:
-		user = User(
-			username=content['username'],
-			email=content['email'],
-			password=content['password'])
-
-		try:
-			db.session.add(user)
-			db.session.commit()
-
-			print("User Added Successfully!")
-			return redirect('/login')
-
-		except Exception:
-			# return str(e)
-			print("There was an issue adding your info. Please try again.")
-			return {"issue": "Failed to add new user"}
-
-	else:
-		print("User Already Exists")
-		return {"issue": "User already exists"}
-
-
-@app.route('/profile')
+@app.route('/api/profile', methods=['GET'])
 @login_required
 def view_user():
 	house = Household.query.filter(Household.id == current_user.houseId).first()
@@ -396,41 +397,36 @@ def view_user():
 	}
 
 
-@app.route('/profile/update', methods=['GET', 'POST'])
+# comeback
+@app.route('/api/profile', methods=['PUT'])
 @login_required
 def update_user():
-	if request.method == 'GET':
-		return {
-			"email": current_user.email,
-		}
+	content = request.json
+	user = User.query.get_or_404(current_user.id)
 
-	else:
-		content = request.json
-		user = User.query.get_or_404(current_user.id)
+	if user.verify_password(content['password']):
+		if content['update'] == "email":
+			user.email = content['email']
 
-		if user.verify_password(content['password']):
-			if content['update'] == "email":
-				user.email = content['email']
-
-			elif content['update'] == "password":
-				user.password = content['newPassword']
-
-			else:
-				return {"issue": "Invalid Request"}
-
-			try:
-				db.session.commit()
-				print("Update Successful")
-				return redirect('/profile')
-
-			except Exception:
-				return {"issue": "There was an issue with updating your profile."}
+		elif content['update'] == "password":
+			user.password = content['newPassword']
 
 		else:
-			return {"issue": "Incorrect Password"}
+			return {"issue": "Invalid Request"}
+
+		try:
+			db.session.commit()
+			print("Update Successful")
+			return redirect('/profile')
+
+		except Exception:
+			return {"issue": "There was an issue with updating your profile."}
+
+	else:
+		return {"issue": "Incorrect Password"}
 
 
-@app.route('/profile/delete')
+@app.route('/api/profile', methods=['DELETE'])
 @login_required
 def delete_user():
 	user = User.query.get_or_404(current_user.id)
@@ -445,7 +441,7 @@ def delete_user():
 		return {"issue": "There was an issue with deleting the user."}
 
 
-@app.route('/items', methods=['GET', 'POST'])
+@app.route('/api/items', methods=['GET', 'POST'])
 @login_required
 def add_item():
 	if request.method == 'GET':
@@ -494,7 +490,7 @@ def add_item():
 				return {"issue": "Item already exists. There was an issue updating item."}
 
 
-@app.route('/items/delete/<int:id>', methods=["DELETE"])
+@app.route('/api/items/<int:id>', methods=["DELETE"])
 @login_required
 def delete_item(id):
 	item = Item.query.get_or_404(id)
@@ -515,7 +511,7 @@ def delete_item(id):
 		return {"issue": "You do not have delete access"}
 
 
-@app.route('/items/update/<int:id>', methods=['GET', 'POST'])
+@app.route('/api/items/<int:id>', methods=['PUT'])
 @login_required
 def update_item(id):
 	item = Item.query.get_or_404(id)
@@ -529,7 +525,7 @@ def update_item(id):
 			content['date_expire'], '%Y-%m-%dT%H:%M:%S.%fZ').date()
 		item.location = content['location']
 		item.shared = current_user.houseId if content['shared'] else 0
-		item.note = content['note'][9:]
+		item.note = content['note']
 
 		try:
 			db.session.commit()

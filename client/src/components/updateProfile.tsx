@@ -15,7 +15,7 @@ function EditProfile() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    fetch("/profile/update", {
+    fetch("/api/profile", {
       method: "get",
     }).then((response) => {
       if (response.redirected) {
@@ -40,8 +40,8 @@ function EditProfile() {
     }),
 
     onSubmit: (values) => {
-      fetch("/profile/update", {
-        method: "post",
+      fetch("/api/profile", {
+        method: "put",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -86,8 +86,8 @@ function EditProfile() {
     }),
 
     onSubmit: (values) => {
-      fetch("/profile/update", {
-        method: "post",
+      fetch("/api/profile", {
+        method: "put",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

@@ -11,7 +11,7 @@ import "./navbar.scss";
 
 function Navbar() {
   const handleLogoutClick = () => {
-    fetch("/logout", {
+    fetch("/api/logout", {
       method: "post",
     }).then((response) => {
       if (response.redirected) {
